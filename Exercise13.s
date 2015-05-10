@@ -260,15 +260,19 @@ green_setup
 		
 call_subroutine
         ADDS R4,R4,#1           ;increase the game round by 1 every time it loops back
+		
+		CMP R4,#5             ;try with 4 rounds for now ;check if you already went through 10 rounds
+        BEQ CompleteGame
+		
 		;;handle round logic
 		BL Game_Round
 		
-		;;check time expired flag, run expiration logic or branch to next round pending results
+		BCS TimerExpired		;if the carry bit is set, then run TimerExpired logic
 		
-		
-		;go to new round if expired flag not set
-		B round                 
+		B round                 ;go to new round if expired flag not set
 
+;logic that will be run when the timer has expired
+TimerExpired
 		;run expiration logic if expired flag settime_expired
 		MOVS R0,#'X'
 		BL PutChar
@@ -278,9 +282,10 @@ call_subroutine
 		BL PutString
 		BL newline
 	
+CompleteGame
         LDR R0,=your_score_is   ;prints: "Game over. Your score is"
         BL PutString
-         MOVS R0,R4              ;put the score into the string
+        MOVS R0,R4              ;put the score into the string
         BL PutNumUB              ;print the decimal form on the terminal screen
         LDR R0,=points
         BL PutString
@@ -310,15 +315,13 @@ newline
 ;game round           : R4
 Game_Round
 		PUSH {R1-R4,LR}
-        CMP R4,#5             ;try with 4 rounds for now ;check if you already went through 10 rounds
-        BEQ done_game
         
         LDR R0,=round_number
         BL PutString
         MOVS R0,R4              ;put the game round number into R0
         BL PutNumUB             ;print the decimal form on the terminal screen
         BL newline
-retry
+Retry
 
 		BL check_pressed		;uses R1
 		CMP R1,#1				;if the user pressed a key
@@ -347,21 +350,21 @@ not_pressed
 		LDR R0,[R0,#0]			
 		LDR R5,=1000            ;10 seconds/.01 count constant = 1000
 		CMP R0,R5				;check if 10 seconds has passed
+		BLT Retry
 		
-		;if the time has expired, set expire flag, return from subroutine
+		;set carry
+		MOVS R3,#1						
+		LSRS R3,R3,#1			
 		
-		;if the time has not expired, brandh to retry
+		B GameRoundReturn
 		
-		B retry
-
-
 increase_score
 
 		;increase the score here and return from subroutine
+		B GameRoundReturn
 		
-
-
-
+;returns from the subroutine
+GameRoundReturn
         POP{R1-R4,PC}
 
 
