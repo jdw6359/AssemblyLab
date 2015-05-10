@@ -262,7 +262,7 @@ green_setup
 call_subroutine
         ADDS R4,R4,#1           ;increase the game round by 1 every time it loops back
 		
-		CMP R4,#5             ;try with 4 rounds for now ;check if you already went through 10 rounds
+		CMP R4,#11             ;try with 4 rounds for now ;check if you already went through 10 rounds
         BEQ CompleteGame
 		
 		;;handle round logic
@@ -349,8 +349,29 @@ incorrect
 not_pressed
 		LDR R0,=Count
 		LDR R0,[R0,#0]			
-		LDR R5,=1000            ;10 seconds/.01 count constant = 1000
-		CMP R0,R5				;check if 10 seconds has passed
+		
+		
+		MOVS R5,#11				;move into R5 11
+		SUBS R6,R5,R4			;R6 has the value of (11-round)
+		
+		MOVS R5,#0				;reset R5
+		
+		;copy (11-i) into R7, shift, and add intermediate to R5
+		MOVS R7,R6
+		LSLS R7,R7,#6
+		ADDS R5,R5,R7
+		
+		;copy (11-i) into R7, shift, and add intermediate to R5
+		MOVS R7,R6
+		LSLS R7,R7,#5
+		ADDS R5,R5,R7
+		
+		;copy (11-i) into R7, shift, and add intermediate to R5
+		MOVS R7,R6
+		LSLS R7,R7,#2
+		ADDS R5,R5,R7
+	
+		CMP R0,R5				;compare time consumed to time allowed
 		BLT Retry
 		
 		;set carry
