@@ -186,10 +186,11 @@ main
 		BL LED_Init
 		BL PDDR
 		CPSIE I					;enable interrupts
-        MOVS R4,#0              ;initialize game round
+
 start
 
-        
+		MOVS R4,#0              ;initialize game round
+			
 		BL Green_off
 		BL Red_off
 		
