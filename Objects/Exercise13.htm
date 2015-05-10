@@ -1,0 +1,66 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><head>
+<title>Static Call Graph - [.\Objects\Exercise13.axf]</title></head>
+<body><HR>
+<H1>Static Call Graph for image .\Objects\Exercise13.axf</H1><HR>
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050106: Last Updated: Sun May 10 17:12:06 2015
+<BR><P>
+<H3>Maximum Stack Usage =          0 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+Call chain for Maximum Stack Depth:</H3>
+
+<P>
+<H3>
+Functions with no stack information
+</H3><UL>
+ <LI><a href="#[5]">Startup</a>
+ <LI><a href="#[1]">Dummy_Handler</a>
+ <LI><a href="#[4]">Reset_Handler</a>
+ <LI><a href="#[2]">UART1_ISR</a>
+ <LI><a href="#[3]">PIT_ISR</a>
+</UL>
+</UL>
+<P>
+<H3>
+Mutually Recursive functions
+</H3> <LI><a href="#[1]">Dummy_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[1]">Dummy_Handler</a><BR>
+</UL>
+<P>
+<H3>
+Function Pointers
+</H3><UL>
+ <LI><a href="#[1]">Dummy_Handler</a> from start.o(Start) referenced 44 times from exercise13.o(RESET)
+ <LI><a href="#[3]">PIT_ISR</a> from exercise13.o(MyCode) referenced from exercise13.o(RESET)
+ <LI><a href="#[4]">Reset_Handler</a> from exercise13.o(MyCode) referenced from exercise13.o(RESET)
+ <LI><a href="#[2]">UART1_ISR</a> from exercise13.o(MyCode) referenced from exercise13.o(RESET)
+</UL>
+<P>
+<H3>
+Global Symbols
+</H3>
+<P><STRONG><a name="[5]"></a>Startup</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, start.o(Start))
+<BR><BR>[Called By]<UL><LI><a href="#[4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Reset_Handler
+</UL>
+
+<P><STRONG><a name="[1]"></a>Dummy_Handler</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, start.o(Start))
+<BR><BR>[Calls]<UL><LI><a href="#[1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Dummy_Handler
+</UL>
+<BR>[Called By]<UL><LI><a href="#[1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Dummy_Handler
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> exercise13.o(RESET)
+</UL>
+<P><STRONG><a name="[4]"></a>Reset_Handler</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, exercise13.o(MyCode))
+<BR><BR>[Calls]<UL><LI><a href="#[5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Startup
+</UL>
+<P>
+<H3>
+Local Symbols
+</H3>
+<P><STRONG><a name="[2]"></a>UART1_ISR</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, exercise13.o(MyCode))
+<BR>[Address Reference Count : 1]<UL><LI> exercise13.o(RESET)
+</UL>
+<P><STRONG><a name="[3]"></a>PIT_ISR</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, exercise13.o(MyCode))
+<BR>[Address Reference Count : 1]<UL><LI> exercise13.o(RESET)
+</UL><P>
+<H3>
+Undefined Global Symbols
+</H3><HR></body></html>

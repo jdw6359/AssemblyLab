@@ -1,0 +1,137 @@
+Component: ARM Compiler 5.05 update 1 (build 106) Tool: armlink [4d0efa]
+
+==============================================================================
+
+Section Cross References
+
+    exercise13.o(MyCode) refers to start.o(Start) for Startup
+    exercise13.o(MyCode) refers to exercise13.o(MyData) for RunStopWatch
+    exercise13.o(MyCode) refers to exercise13.o(MyConst) for prompt
+    exercise13.o(RESET) refers to start.o(.ARM.__at_0x1FFFE000) for __initial_sp
+    exercise13.o(RESET) refers to exercise13.o(MyCode) for Reset_Handler
+    exercise13.o(RESET) refers to start.o(Start) for Dummy_Handler
+
+
+==============================================================================
+
+Image Symbol Table
+
+    Local Symbols
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    RESET                                    0x00000000   Section      192  exercise13.o(RESET)
+    Exercise13.s                             0x00000000   Number         0  exercise13.o ABSOLUTE
+    MKL46Z4.s                                0x00000000   Number         0  mkl46z4.o ABSOLUTE
+    Start.s                                  0x00000000   Number         0  start.o ABSOLUTE
+    .ARM.__at_0xC0                           0x000000c0   Section       64  start.o(.ARM.__at_0xC0)
+    Start                                    0x00000100   Section      260  start.o(Start)
+    MyConst                                  0x00000204   Section      156  exercise13.o(MyConst)
+    prompt                                   0x00000204   Data          34  exercise13.o(MyConst)
+    wrong                                    0x00000226   Data           8  exercise13.o(MyConst)
+    correct                                  0x0000022e   Data          22  exercise13.o(MyConst)
+    out_of_time                              0x00000244   Data          26  exercise13.o(MyConst)
+    red                                      0x0000025e   Data           4  exercise13.o(MyConst)
+    green                                    0x00000262   Data           6  exercise13.o(MyConst)
+    both                                     0x00000268   Data           5  exercise13.o(MyConst)
+    neither                                  0x0000026d   Data           8  exercise13.o(MyConst)
+    your_score_is                            0x00000275   Data          26  exercise13.o(MyConst)
+    points                                   0x0000028f   Data           9  exercise13.o(MyConst)
+    round_number                             0x00000298   Data           8  exercise13.o(MyConst)
+    .ARM.__at_0x400                          0x00000400   Section       16  start.o(.ARM.__at_0x400)
+    MyCode                                   0x00000410   Section     1444  exercise13.o(MyCode)
+    UART1_ISR                                0x000005b5   Thumb Code     0  exercise13.o(MyCode)
+    PIT_ISR                                  0x000008c9   Thumb Code     0  exercise13.o(MyCode)
+    .ARM.__at_0x1FFFE000                     0x1fffe000   Section      256  start.o(.ARM.__at_0x1FFFE000)
+    MyData                                   0x1fffe100   Section      388  exercise13.o(MyData)
+    RxQBuffer                                0x1fffe100   Data          80  exercise13.o(MyData)
+    TxQBuffer                                0x1fffe150   Data          80  exercise13.o(MyData)
+    RxQRecord                                0x1fffe1a0   Data          18  exercise13.o(MyData)
+    TxQRecord                                0x1fffe1b4   Data          18  exercise13.o(MyData)
+    QBuffer                                  0x1fffe1c8   Data          80  exercise13.o(MyData)
+    QRecord                                  0x1fffe218   Data          18  exercise13.o(MyData)
+    Count                                    0x1fffe22c   Data           4  exercise13.o(MyData)
+    RunStopWatch                             0x1fffe230   Data           1  exercise13.o(MyData)
+
+    Global Symbols
+
+    Symbol Name                              Value     Ov Type        Size  Object(Section)
+
+    BuildAttributes$$THM_ISAv3M$S$PE$A:L22$X:L11$S22$IEEE1$IW$USESV6$~STKCKD$USESV7$~SHL$OSPACE$EBA8$STANDARDLIB$EABIv2 0x00000000   Number         0  anon$$obj.o ABSOLUTE
+    __Vectors                                0x00000000   Data           0  exercise13.o(RESET)
+    __Vectors_End                            0x000000c0   Data           0  exercise13.o(RESET)
+    __Vectors_Size                           0x000000c0   Number         0  exercise13.o ABSOLUTE
+    Startup                                  0x00000101   Thumb Code     0  start.o(Start)
+    Dummy_Handler                            0x000001e1   Thumb Code     0  start.o(Start)
+    Reset_Handler                            0x00000411   Thumb Code     0  exercise13.o(MyCode)
+    __initial_sp                             0x1fffe100   Data           0  start.o(.ARM.__at_0x1FFFE000)
+
+
+
+==============================================================================
+
+Memory Map of the image
+
+  Image Entry point : 0x00000411
+
+  Load Region LR_IROM1 (Base: 0x00000000, Size: 0x00000c38, Max: 0x00040000, ABSOLUTE)
+
+    Execution Region ER_IROM1 (Base: 0x00000000, Size: 0x000009b4, Max: 0x00040000, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x00000000   0x000000c0   Data   RO           12    RESET               exercise13.o
+    0x000000c0   0x00000040   Data   RO            2    .ARM.__at_0xC0      start.o
+    0x00000100   0x00000104   Code   RO            1    Start               start.o
+    0x00000204   0x0000009c   Data   RO           13    MyConst             exercise13.o
+    0x000002a0   0x00000160   PAD
+    0x00000400   0x00000010   Code   RO            3    .ARM.__at_0x400     start.o
+    0x00000410   0x000005a4   Code   RO           11  * MyCode              exercise13.o
+
+
+    Execution Region RW_IRAM1 (Base: 0x1fffe000, Size: 0x00000284, Max: 0x00008000, ABSOLUTE)
+
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x1fffe000   0x00000100   Data   RW            4    .ARM.__at_0x1FFFE000  start.o
+    0x1fffe100   0x00000184   Data   RW           14    MyData              exercise13.o
+
+
+==============================================================================
+
+Image component sizes
+
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
+
+      1444        234        348        388          0        828   exercise13.o
+       276         50         64        256          0        556   start.o
+
+    ----------------------------------------------------------------------
+      1720        284        764        644          0       1384   Object Totals
+         0          0          0          0          0          0   (incl. Generated)
+         0          0        352          0          0          0   (incl. Padding)
+
+    ----------------------------------------------------------------------
+         0          0          0          0          0          0   Library Totals
+         0          0          0          0          0          0   (incl. Padding)
+
+    ----------------------------------------------------------------------
+
+==============================================================================
+
+
+      Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
+
+      1720        284        764        644          0       1384   Grand Totals
+      1720        284        764        644          0       1384   ELF Image Totals
+      1720        284        764        644          0          0   ROM Totals
+
+==============================================================================
+
+    Total RO  Size (Code + RO Data)                 2484 (   2.43kB)
+    Total RW  Size (RW Data + ZI Data)               644 (   0.63kB)
+    Total ROM Size (Code + RO Data + RW Data)       3128 (   3.05kB)
+
+==============================================================================
+
