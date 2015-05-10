@@ -260,8 +260,31 @@ green_setup
 		
 call_subroutine
         ADDS R4,R4,#1           ;increase the game round by 1 every time it loops back
+		;;handle round logic
 		BL Game_Round
-		B round                 ;branch back to move on to the next round.
+		
+		;;check time expired flag, run expiration logic or branch to next round pending results
+		
+		
+		;go to new round if expired flag not set
+		B round                 
+
+		;run expiration logic if expired flag settime_expired
+		MOVS R0,#'X'
+		BL PutChar
+		LDR R0,=out_of_time
+		BL PutString
+		MOVS R0,R2				;load string for neither, both, red, or green
+		BL PutString
+		BL newline
+	
+        LDR R0,=your_score_is   ;prints: "Game over. Your score is"
+        BL PutString
+         MOVS R0,R4              ;put the score into the string
+        BL PutNumUB              ;print the decimal form on the terminal screen
+        LDR R0,=points
+        BL PutString
+		B start
 
 
 ;>>>>>   end main program code <<<<<
@@ -297,7 +320,6 @@ Game_Round
         BL newline
 retry
 
-
 		BL check_pressed		;uses R1
 		CMP R1,#1				;if the user pressed a key
 		BNE not_pressed
@@ -325,30 +347,23 @@ not_pressed
 		LDR R0,[R0,#0]			
 		LDR R5,=1000            ;10 seconds/.01 count constant = 1000
 		CMP R0,R5				;check if 10 seconds has passed
-		BGE time_expired	  	;out of time
+		
+		;if the time has expired, set expire flag, return from subroutine
+		
+		;if the time has not expired, brandh to retry
+		
 		B retry
 
-time_expired
-		MOVS R0,#'X'
-		BL PutChar
-		LDR R0,=out_of_time
-		BL PutString
-		MOVS R0,R2				;load string for neither, both, red, or green
-		BL PutString
-		BL newline
-		B done_game
+
 increase_score
-        
+
+		;increase the score here and return from subroutine
+		
+
+
+
         POP{R1-R4,PC}
-done_game	
-        LDR R0,=your_score_is   ;prints: "Game over. Your score is"
-        BL PutString
-         MOVS R0,R4              ;put the score into the string
-        BL PutNumUB              ;print the decimal form on the terminal screen
-        LDR R0,=points
-        BL PutString
-        B start
-		POP {R1-R4,PC}
+
 
 ;*****************************************************************************************
 Initialize_Queue_Record

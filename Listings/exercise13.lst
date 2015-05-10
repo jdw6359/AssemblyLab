@@ -549,9 +549,9 @@ ARM Macro Assembler    Page 9 Program Title for Listing Header Goes Here
   322 00000124         
   323 00000124         not_pressed
   324 00000124 48EF            LDR              R0,=Count
-  325 00000126 6800            LDR              R0,[R0,#0]  ;10 seconds/.01 cou
+  325 00000126 6800            LDR              R0,[R0,#0]
+  326 00000128 4DEF            LDR              R5,=1000    ;10 seconds/.01 cou
                                                             nt constant = 1000
-  326 00000128 4DEF            LDR              R5,=1000
   327 0000012A 42A8            CMP              R0,R5       ;check if 10 second
                                                             s has passed
   328 0000012C DA00            BGE              time_expired ;out of time
@@ -2364,12 +2364,12 @@ ARM Macro Assembler    Page 37 Program Title for Listing Header Goes Here
  1149 00000183 00              ALIGN
  1150 00000184         ;>>>>>   end variables here <<<<<
  1151 00000184                 END
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0+ --apcs=inter
-work --depend=.\objects\exercise13.d -o.\objects\exercise13.o -I"D:\Assembly La
-nguage Labs Flash Drive\Exercise13\RTE" -IC:\Keil_v5\ARM\PACK\Keil\Kinetis_KLxx
-_DFP\1.4.0\Device\Include -IC:\Keil_v5\ARM\CMSIS\Include --predefine="__UVISION
-_VERSION SETA 513" --predefine="MKL46Z256xxx4 SETA 1" --list=.\listings\exercis
-e13.lst Exercise13.s
+Command Line: --debug --xref --cpu=Cortex-M0+ --apcs=interwork --depend=.\objec
+ts\exercise13.d -o.\objects\exercise13.o -IC:\Users\Joshua\Desktop\Exercise13\R
+TE -IC:\Keil_v5\ARM\PACK\Keil\Kinetis_KLxx_DFP\1.4.0\Device\Include -IC:\Keil_v
+5\ARM\CMSIS\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION 
+SETA 513" --predefine="MKL46Z256xxx4 SETA 1" --list=.\listings\exercise13.lst E
+xercise13.s
 
 
 
@@ -16365,4 +16365,4 @@ Symbol: __initial_sp
       At line 1053 in file Exercise13.s
 Comment: __initial_sp used once
 3 symbols
-1849 symbols in table
+1850 symbols in table

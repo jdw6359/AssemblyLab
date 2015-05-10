@@ -4,12 +4,11 @@
 ARM Macro Assembler    Page 1 
 
 
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0+ --apcs=inter
-work --depend=.\objects\mkl46z4.d -o.\objects\mkl46z4.o -I"D:\Assembly Language
- Labs Flash Drive\Exercise13\RTE" -IC:\Keil_v5\ARM\PACK\Keil\Kinetis_KLxx_DFP\1
-.4.0\Device\Include -IC:\Keil_v5\ARM\CMSIS\Include --predefine="__UVISION_VERSI
-ON SETA 513" --predefine="MKL46Z256xxx4 SETA 1" --list=.\listings\mkl46z4.lst M
-KL46Z4.s
+Command Line: --debug --xref --cpu=Cortex-M0+ --apcs=interwork --depend=.\objec
+ts\mkl46z4.d -o.\objects\mkl46z4.o -IC:\Users\Joshua\Desktop\Exercise13\RTE -IC
+:\Keil_v5\ARM\PACK\Keil\Kinetis_KLxx_DFP\1.4.0\Device\Include -IC:\Keil_v5\ARM\
+CMSIS\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 5
+13" --predefine="MKL46Z256xxx4 SETA 1" --list=.\listings\mkl46z4.lst MKL46Z4.s
 
 
 
@@ -12371,4 +12370,4 @@ Absolute symbols
       None
 Comment: WORD_SIZE unused
 1352 symbols
-1686 symbols in table
+1687 symbols in table

@@ -32,11 +32,11 @@ up __main
    20 00000000         ;Include files
    21 00000000         ;  MKL46Z4.s
    22 00000000                 GET              MKL46Z4.s
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0+ --apcs=inter
-work --depend=.\objects\start.d -o.\objects\start.o -I"D:\Assembly Language Lab
-s Flash Drive\Exercise13\RTE" -IC:\Keil_v5\ARM\PACK\Keil\Kinetis_KLxx_DFP\1.4.0
-\Device\Include -IC:\Keil_v5\ARM\CMSIS\Include --predefine="__UVISION_VERSION S
-ETA 513" --predefine="MKL46Z256xxx4 SETA 1" --list=.\listings\start.lst Start.s
+Command Line: --debug --xref --cpu=Cortex-M0+ --apcs=interwork --depend=.\objec
+ts\start.d -o.\objects\start.o -IC:\Users\Joshua\Desktop\Exercise13\RTE -IC:\Ke
+il_v5\ARM\PACK\Keil\Kinetis_KLxx_DFP\1.4.0\Device\Include -IC:\Keil_v5\ARM\CMSI
+S\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 513" 
+--predefine="MKL46Z256xxx4 SETA 1" --list=.\listings\start.lst Start.s
 
 
 
@@ -12640,4 +12640,4 @@ Symbol: WORD_SIZE
       None
 Comment: WORD_SIZE unused
 1353 symbols
-1714 symbols in table
+1715 symbols in table
