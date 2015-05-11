@@ -204,8 +204,6 @@ start
 		LDR R0,=prompt			;enter a key to start the game
 		BL PutString
 		BL newline
-		MOVS R0,#'>'
-		BL PutChar
 		BL GetChar
 
 		
@@ -320,11 +318,14 @@ newline
 Game_Round
 		PUSH {R1-R7,LR}
        
+		LDR R0,=round_number
+		BL PutString
         MOVS R0,R4              ;put the game round number into R0
         BL PutNumUB             ;print the decimal form on the terminal screen
         BL newline
+		MOVS R0,#'>'
+		BL PutChar
 Retry
-
 		BL check_pressed		;uses R1
 		CMP R1,#1				;if the user pressed a key
 		BNE not_pressed
@@ -346,6 +347,8 @@ incorrect
 		LDR R0,=wrong
 		BL PutString
 		BL newline
+		MOVS R0,#'>'
+		BL PutChar
 		
 not_pressed
 		LDR R0,=Count
