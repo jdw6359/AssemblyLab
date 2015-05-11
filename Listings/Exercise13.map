@@ -5,7 +5,7 @@ Component: ARM Compiler 5.05 update 1 (build 106) Tool: armlink [4d0efa]
 Section Cross References
 
     exercise13.o(MyCode) refers to start.o(Start) for Startup
-    exercise13.o(MyCode) refers to exercise13.o(MyData) for RunStopWatch
+    exercise13.o(MyCode) refers to exercise13.o(MyData) for Score
     exercise13.o(MyCode) refers to exercise13.o(MyConst) for prompt
     exercise13.o(RESET) refers to start.o(.ARM.__at_0x1FFFE000) for __initial_sp
     exercise13.o(RESET) refers to exercise13.o(MyCode) for Reset_Handler
@@ -37,13 +37,12 @@ Image Symbol Table
     neither                                  0x0000026d   Data           8  exercise13.o(MyConst)
     your_score_is                            0x00000275   Data          26  exercise13.o(MyConst)
     points                                   0x0000028f   Data           9  exercise13.o(MyConst)
-    round_number                             0x00000298   Data           8  exercise13.o(MyConst)
     .ARM.__at_0x400                          0x00000400   Section       16  start.o(.ARM.__at_0x400)
-    MyCode                                   0x00000410   Section     1464  exercise13.o(MyCode)
-    UART1_ISR                                0x000005db   Thumb Code     0  exercise13.o(MyCode)
-    PIT_ISR                                  0x000008ed   Thumb Code     0  exercise13.o(MyCode)
+    MyCode                                   0x00000410   Section     1504  exercise13.o(MyCode)
+    UART1_ISR                                0x000005ff   Thumb Code     0  exercise13.o(MyCode)
+    PIT_ISR                                  0x00000911   Thumb Code     0  exercise13.o(MyCode)
     .ARM.__at_0x1FFFE000                     0x1fffe000   Section      256  start.o(.ARM.__at_0x1FFFE000)
-    MyData                                   0x1fffe100   Section      388  exercise13.o(MyData)
+    MyData                                   0x1fffe100   Section      392  exercise13.o(MyData)
     RxQBuffer                                0x1fffe100   Data          80  exercise13.o(MyData)
     TxQBuffer                                0x1fffe150   Data          80  exercise13.o(MyData)
     RxQRecord                                0x1fffe1a0   Data          18  exercise13.o(MyData)
@@ -51,7 +50,8 @@ Image Symbol Table
     QBuffer                                  0x1fffe1c8   Data          80  exercise13.o(MyData)
     QRecord                                  0x1fffe218   Data          18  exercise13.o(MyData)
     Count                                    0x1fffe22c   Data           4  exercise13.o(MyData)
-    RunStopWatch                             0x1fffe230   Data           1  exercise13.o(MyData)
+    Score                                    0x1fffe230   Data           4  exercise13.o(MyData)
+    RunStopWatch                             0x1fffe234   Data           1  exercise13.o(MyData)
 
     Global Symbols
 
@@ -74,9 +74,9 @@ Memory Map of the image
 
   Image Entry point : 0x00000411
 
-  Load Region LR_IROM1 (Base: 0x00000000, Size: 0x00000c4c, Max: 0x00040000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x00000000, Size: 0x00000c78, Max: 0x00040000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Base: 0x00000000, Size: 0x000009c8, Max: 0x00040000, ABSOLUTE)
+    Execution Region ER_IROM1 (Base: 0x00000000, Size: 0x000009f0, Max: 0x00040000, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -86,15 +86,15 @@ Memory Map of the image
     0x00000204   0x0000009c   Data   RO           13    MyConst             exercise13.o
     0x000002a0   0x00000160   PAD
     0x00000400   0x00000010   Code   RO            3    .ARM.__at_0x400     start.o
-    0x00000410   0x000005b8   Code   RO           11  * MyCode              exercise13.o
+    0x00000410   0x000005e0   Code   RO           11  * MyCode              exercise13.o
 
 
-    Execution Region RW_IRAM1 (Base: 0x1fffe000, Size: 0x00000284, Max: 0x00008000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Base: 0x1fffe000, Size: 0x00000288, Max: 0x00008000, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x1fffe000   0x00000100   Data   RW            4    .ARM.__at_0x1FFFE000  start.o
-    0x1fffe100   0x00000184   Data   RW           14    MyData              exercise13.o
+    0x1fffe100   0x00000188   Data   RW           14    MyData              exercise13.o
 
 
 ==============================================================================
@@ -104,11 +104,11 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-      1464        228        348        388          0        816   exercise13.o
+      1504        242        348        392          0        832   exercise13.o
        276         50         64        256          0        532   start.o
 
     ----------------------------------------------------------------------
-      1740        278        764        644          0       1348   Object Totals
+      1780        292        764        648          0       1364   Object Totals
          0          0          0          0          0          0   (incl. Generated)
          0          0        352          0          0          0   (incl. Padding)
 
@@ -123,15 +123,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      1740        278        764        644          0       1348   Grand Totals
-      1740        278        764        644          0       1348   ELF Image Totals
-      1740        278        764        644          0          0   ROM Totals
+      1780        292        764        648          0       1364   Grand Totals
+      1780        292        764        648          0       1364   ELF Image Totals
+      1780        292        764        648          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 2504 (   2.45kB)
-    Total RW  Size (RW Data + ZI Data)               644 (   0.63kB)
-    Total ROM Size (Code + RO Data + RW Data)       3148 (   3.07kB)
+    Total RO  Size (Code + RO Data)                 2544 (   2.48kB)
+    Total RW  Size (RW Data + ZI Data)               648 (   0.63kB)
+    Total ROM Size (Code + RO Data + RW Data)       3192 (   3.12kB)
 
 ==============================================================================
 

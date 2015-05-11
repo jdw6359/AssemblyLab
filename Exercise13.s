@@ -190,6 +190,8 @@ main
 start
 
 		MOVS R4,#0              ;initialize game round
+		LDR R0,=Score			;load into R0 the address of score
+		STR R4,[R0,#0]			;store 0 in Score variable
 			
 		BL Green_off
 		BL Red_off
@@ -286,7 +288,8 @@ TimerExpired
 CompleteGame
         LDR R0,=your_score_is   ;prints: "Game over. Your score is"
         BL PutString
-        MOVS R0,R4              ;put the score into the string
+        LDR R0,=Score              	;load into R0 the address of score
+		LDR R0,[R0,#0]				;load into R0 the value at R0's address
         BL PutNumUB              ;print the decimal form on the terminal screen
         LDR R0,=points
         BL PutString
@@ -316,9 +319,7 @@ newline
 ;game round           : R4
 Game_Round
 		PUSH {R1-R4,LR}
-        
-        LDR R0,=round_number
-        BL PutString
+       
         MOVS R0,R4              ;put the game round number into R0
         BL PutNumUB             ;print the decimal form on the terminal screen
         BL newline
@@ -382,6 +383,37 @@ not_pressed
 		
 increase_score
 
+
+		;R4 is game round
+		;R5 contains time allowed (in terms of .01s)
+		;Score+=(Time allowed - time taken) * round
+		
+		;get the time taken
+		LDR R6,=Count
+		LDR R6,[R6,#0]
+		
+		;subtract time taken from time allowed
+		SUBS R5,R5,R6
+		
+		;loop for n rounds, adding intermediate
+		
+		MOVS R6,#0					;R6 is the accumulator for the intermediate score
+		MOVS R7,#0					;R7 is counting variable
+		
+		
+AddingLoop
+		
+		ADDS R6,R6,R5				;add time difference to accumulator
+		ADDS R7,R7,#1				
+		CMP R7,R4					;compare counter to rounds
+		BLT AddingLoop				;continue to add as long as counter is less than #Rounds
+		
+		;in R6 is the intermediate score to add to current score
+		LDR R7,=Score				;load into R5 address of Score
+		LDR R5,[R7,#0]				;load value of score into R5
+		ADDS R5,R5,R6				;increment score by intermediate score value in R6
+		STR R5,[R7,#0]				;store incremented score in Score variable
+		
 		;increase the score here and return from subroutine
 		B GameRoundReturn
 		
@@ -1160,11 +1192,6 @@ your_score_is		DCB 	"Game over. Your score is ",0
 points				DCB 	" points!",0	
 round_number		DCB 	"Round #",0	
 
-
-
-
-
-
 ;>>>>>   end constants here <<<<<	
 ;Variables
             AREA    MyData,DATA,READWRITE
@@ -1182,6 +1209,8 @@ QBuffer SPACE Q_BUF_SZ					        		;queue contents
 QRecord SPACE Q_REC_SZ                                  ;queue management record
 	ALIGN
 Count SPACE 4
+	ALIGN
+Score SPACE 4											;the score of the current game
     ALIGN
 RunStopWatch SPACE 1
     ALIGN
