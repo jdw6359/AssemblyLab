@@ -200,6 +200,17 @@ start
 		STRB R1,[R0,#0]			;turn the Stop Watch (PIT interrupt counter) on 
 		
         BL newline				;render a new line to user
+				
+		LDR R0,=instruction_1
+		BL PutString
+		
+		BL newline
+		
+		LDR R0,=instruction_2
+		BL PutString
+				
+		BL newline		
+				
 		LDR R0,=prompt			;enter a key to start the game
 		BL PutString			;display the prompt via the terminal
 		BL newline				;render a new line to the user
@@ -1171,6 +1182,9 @@ neither				DCB 	"neither",0
 your_score_is		DCB 	"Game over. Your score is ",0	
 points				DCB 	" points!",0	
 round_number		DCB 	"Round #",0	
+
+instruction_1		DCB 	"Enter the following characters to indicate which LED combination(s) are used:",0
+instruction_2		DCB		"(b) Both (n) Neither (g) Green (r)Red",0
 
 ;>>>>>   end constants here <<<<<	
 ;Variables
