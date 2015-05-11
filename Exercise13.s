@@ -179,45 +179,44 @@ main
 ;>>>>> begin main program code <<<<<
 
 		BL Initialize_Queue_Record
-		BL Init_UART1			;initailize uart
-		BL NVIC
-		BL Init_PIT
-		BL InitPortDandE
-		BL LED_Init
-		BL PDDR
+		BL Init_UART1			;initailize UART Module
+		BL NVIC					;Initialize NVIC Interrupts
+		BL Init_PIT				;Initialize PIT Module
+		BL InitPortDandE		;Initialize ports D and E
+		BL LED_Init				;Initialze LED components
+		BL PDDR					;Initialize PDDR Module
 		CPSIE I					;enable interrupts
 
 start
-
 		MOVS R4,#0              ;initialize game round
 		LDR R0,=Score			;load into R0 the address of score
 		STR R4,[R0,#0]			;store 0 in Score variable
 			
-		BL Green_off
-		BL Red_off
+		BL Green_off			;turn the green LED off
+		BL Red_off				;turn the red LED off
 		
 		LDR R0,=RunStopWatch	;timer depends on user delay
-		MOVS R1,#1
-		STRB R1,[R0,#0]
+		MOVS R1,#1				
+		STRB R1,[R0,#0]			;turn the Stop Watch (PIT interrupt counter) on 
 		
-        BL newline
+        BL newline				;render a new line to user
 		LDR R0,=prompt			;enter a key to start the game
-		BL PutString
-		BL newline
-		BL GetChar
+		BL PutString			;display the prompt via the terminal
+		BL newline				;render a new line to the user
+		BL GetChar				;accept user input
 
-		
 round      
-		LDR R0,=Count
+		;below segment will generate a random number {0-3} used to simulate randomness
+		LDR R0,=Count			
 		MOVS R2,R0				;save count address
 		LDR R0,[R0,#0]			;get value
-		
 		MOVS R1,#3				;mask of 11 (last two bits)
 		ANDS R1,R1,R0			;mod by 4
-		
 		MOVS R0,#0
 		STR R0,[R2,#0]			;initialize count to 0
 		
+		;contents of R1 contain 'Random' number => {0-3}
+		;configure LED combinations accordingly
 		CMP R1,#0
 		BEQ neither_setup
 		
@@ -229,9 +228,9 @@ round
 
 		CMP R1,#3
 		BEQ green_setup
-;---------------------------------------------------------------------------
 
 neither_setup
+		;configure LED's such that neither LED's are on
 		BL Red_off
 		BL Green_off
 		LDR R2,=neither			;setup input parameters for subroutine
@@ -239,6 +238,7 @@ neither_setup
 		B call_subroutine
 		
 both_setup
+		;configure LED's such that both LED's are turned on
 		BL Green_on
 		BL Red_on
 		LDR R2,=both			;setup input parameters for subroutine
@@ -246,6 +246,7 @@ both_setup
 		B call_subroutine
 		
 red_setup
+		;configure LED's such that only the red LED is turned on
 		BL Red_on
 		BL Green_off
 		LDR R2,=red				;setup input parameters for subroutine
@@ -253,6 +254,7 @@ red_setup
 		B call_subroutine
 		
 green_setup	
+		;configure LED's such that only the green LED is turned on
 		BL Green_on
 		BL Red_off
 		LDR R2,=green			;setup input parameters for subroutine
@@ -261,37 +263,34 @@ green_setup
 		
 call_subroutine
         ADDS R4,R4,#1           ;increase the game round by 1 every time it loops back
+		CMP R4,#11				;allow maximum of 10 rounds, compare to ceiling of (10+1)
+        BEQ CompleteGame		;complete game if max rounds has been completed
 		
-		CMP R4,#11             ;try with 4 rounds for now ;check if you already went through 10 rounds
-        BEQ CompleteGame
-		
-		;;handle round logic
-		BL Game_Round
+		BL Game_Round			;subroutine will perform the responsibilities of a single round
 		
 		BCS TimerExpired		;if the carry bit is set, then run TimerExpired logic
-		
 		B round                 ;go to new round if expired flag not set
 
 ;logic that will be run when the timer has expired
 TimerExpired
 		;run expiration logic if expired flag settime_expired
-		MOVS R0,#'X'
-		BL PutChar
-		LDR R0,=out_of_time
-		BL PutString
+		MOVS R0,#'X'			;place 'X' character into R0
+		BL PutChar				;write 'X' to terminal 
+		LDR R0,=out_of_time		;load address of 'out_of_time' message into R0
+		BL PutString			;write 'out_of_time' string to terminal
 		MOVS R0,R2				;load string for neither, both, red, or green
 		BL PutString
-		BL newline
+		BL newline		
 	
 CompleteGame
-        LDR R0,=your_score_is   ;prints: "Game over. Your score is"
+        LDR R0,=your_score_is   	;prints: "Game over. Your score is"
         BL PutString
         LDR R0,=Score              	;load into R0 the address of score
 		LDR R0,[R0,#0]				;load into R0 the value at R0's address
-        BL PutNumUB              ;print the decimal form on the terminal screen
-        LDR R0,=points
-        BL PutString
-		B start
+        BL PutNumUB              	;print the decimal form on the terminal screen
+        LDR R0,=points				;load address of 'points' prefix message into R0
+        BL PutString				
+		B start						;start new game
 
 
 ;>>>>>   end main program code <<<<<
@@ -318,32 +317,33 @@ newline
 Game_Round
 		PUSH {R1-R7,LR}
        
-		LDR R0,=round_number
-		BL PutString
+		LDR R0,=round_number	;load address of round prefix
+		BL PutString			;write round prefix to terminal
         MOVS R0,R4              ;put the game round number into R0
         BL PutNumUB             ;print the decimal form on the terminal screen
-        BL newline
-		MOVS R0,#'>'
+        BL newline				;write new line to terminal
+		MOVS R0,#'>'			;write '>' character to terminal
 		BL PutChar
 Retry
 		BL check_pressed		;uses R1
 		CMP R1,#1				;if the user pressed a key
-		BNE not_pressed
+		BNE not_pressed			;branch to not_pressed label if no action taken 
 		BL GetChar
 		CMP R0,R3				;check if the user pressed correct character
-		BEQ correct_answer
+		BEQ correct_answer		;branch to correct_answer label if correct answer provided
 		BNE incorrect
 correct_answer
         BL PutChar              ;print the user's character on the screen
-		LDR R0,=correct
-		BL PutString
+		LDR R0,=correct			;load address of 'correct' message into R0
+		BL PutString			;write 'correct' message to terminal
 		MOVS R0,R2				;load string for neither, both, red, or green
 		BL PutString
-		BL newline
-		B increase_score
+		BL newline				;write a new line to terminal
+		B increase_score		;increase the score for current game
 		
 incorrect
-        BL PutChar              ;print the user's character on the screen
+		;when the incorrect character is entered, alert user with appropriate error message
+        BL PutChar
 		LDR R0,=wrong
 		BL PutString
 		BL newline
@@ -351,32 +351,32 @@ incorrect
 		BL PutChar
 		
 not_pressed
-		LDR R0,=Count
-		LDR R0,[R0,#0]			
+		;determine if the amount of time spent in round exceeds the amount of time allowed
+		LDR R0,=Count			;load address of count into R0
+		LDR R0,[R0,#0]			;load value of count into R0
 		
+		;below block will calculate (11-round) * 100 -- 
+		;equal to number of .01s segments allowed in round
 		
 		MOVS R5,#11				;move into R5 11
 		SUBS R6,R5,R4			;R6 has the value of (11-round)
-		
 		MOVS R5,#0				;reset R5
-		
 		;copy (11-i) into R7, shift, and add intermediate to R5
 		MOVS R7,R6
 		LSLS R7,R7,#6
 		ADDS R5,R5,R7
-		
 		;copy (11-i) into R7, shift, and add intermediate to R5
 		MOVS R7,R6
 		LSLS R7,R7,#5
 		ADDS R5,R5,R7
-		
 		;copy (11-i) into R7, shift, and add intermediate to R5
 		MOVS R7,R6
 		LSLS R7,R7,#2
 		ADDS R5,R5,R7
 	
-		CMP R0,R5				;compare time consumed to time allowed
-		BLT Retry
+		;compares count (.01s segments spent in round) to the time allowed
+		CMP R0,R5				;compare time spent to time allowed
+		BLT Retry				;continue with round if more time allowed
 		
 		;set carry
 		MOVS R3,#1						

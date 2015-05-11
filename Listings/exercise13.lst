@@ -343,83 +343,96 @@ ARM Macro Assembler    Page 6 Program Title for Listing Header Goes Here
   179 00000006         ;>>>>> begin main program code <<<<<
   180 00000006         
   181 00000006 F000 F8CC       BL               Initialize_Queue_Record
-  182 0000000A F000 FA3E       BL               Init_UART1  ;initailize uart
-  183 0000000E F000 FA2D       BL               NVIC
-  184 00000012 F000 FA61       BL               Init_PIT
-  185 00000016 F000 F992       BL               InitPortDandE
-  186 0000001A F000 F998       BL               LED_Init
-  187 0000001E F000 F985       BL               PDDR
+  182 0000000A F000 FA3E       BL               Init_UART1  ;initailize UART Mo
+                                                            dule
+  183 0000000E F000 FA2D       BL               NVIC        ;Initialize NVIC In
+                                                            terrupts
+  184 00000012 F000 FA61       BL               Init_PIT    ;Initialize PIT Mod
+                                                            ule
+  185 00000016 F000 F992       BL               InitPortDandE ;Initialize ports
+                                                             D and E
+  186 0000001A F000 F998       BL               LED_Init    ;Initialze LED comp
+                                                            onents
+  187 0000001E F000 F985       BL               PDDR        ;Initialize PDDR Mo
+                                                            dule
   188 00000022 B662            CPSIE            I           ;enable interrupts
   189 00000024         
   190 00000024         start
-  191 00000024         
-  192 00000024 2400            MOVS             R4,#0       ;initialize game ro
+  191 00000024 2400            MOVS             R4,#0       ;initialize game ro
                                                             und
-  193 00000026 482D            LDR              R0,=Score   ;load into R0 the a
+  192 00000026 482D            LDR              R0,=Score   ;load into R0 the a
                                                             ddress of score
-  194 00000028 6004            STR              R4,[R0,#0]  ;store 0 in Score v
+  193 00000028 6004            STR              R4,[R0,#0]  ;store 0 in Score v
                                                             ariable
-  195 0000002A         
-  196 0000002A F000 F9A5       BL               Green_off
-  197 0000002E F000 F99D       BL               Red_off
-  198 00000032         
-  199 00000032 482B            LDR              R0,=RunStopWatch ;timer depends
+  194 0000002A         
+  195 0000002A F000 F9A5       BL               Green_off   ;turn the green LED
+                                                             off
+  196 0000002E F000 F99D       BL               Red_off     ;turn the red LED o
+                                                            ff
+  197 00000032         
+  198 00000032 482B            LDR              R0,=RunStopWatch ;timer depends
                                                              on user delay
-  200 00000034 2101            MOVS             R1,#1
-  201 00000036 7001            STRB             R1,[R0,#0]
-  202 00000038         
-  203 00000038 F000 F868       BL               newline
-  204 0000003C 4829            LDR              R0,=prompt  ;enter a key to sta
+  199 00000034 2101            MOVS             R1,#1
+  200 00000036 7001            STRB             R1,[R0,#0]  ;turn the Stop Watc
+                                                            h (PIT interrupt co
+                                                            unter) on 
+  201 00000038         
+  202 00000038 F000 F868       BL               newline     ;render a new line 
+                                                            to user
+  203 0000003C 4829            LDR              R0,=prompt  ;enter a key to sta
                                                             rt the game
-  205 0000003E F000 F969       BL               PutString
-  206 00000042 F000 F863       BL               newline
-  207 00000046 F000 F9AE       BL               GetChar
-  208 0000004A         
-  209 0000004A         
-  210 0000004A         round
-  211 0000004A 4827            LDR              R0,=Count
-  212 0000004C 0002            MOVS             R2,R0       ;save count address
-                                                            
-  213 0000004E 6800            LDR              R0,[R0,#0]  ;get value
-  214 00000050         
-  215 00000050 2103            MOVS             R1,#3       ;mask of 11 (last t
-                                                            wo bits)
-  216 00000052 4001            ANDS             R1,R1,R0    ;mod by 4
-  217 00000054         
-  218 00000054 2000            MOVS             R0,#0
-  219 00000056 6010            STR              R0,[R2,#0]  ;initialize count t
+  204 0000003E F000 F969       BL               PutString   ;display the prompt
+                                                             via the terminal
+  205 00000042 F000 F863       BL               newline     ;render a new line 
+                                                            to the user
+  206 00000046 F000 F9AE       BL               GetChar     ;accept user input
+  207 0000004A         
+  208 0000004A         round
 
 
 
 ARM Macro Assembler    Page 7 Program Title for Listing Header Goes Here
 
 
+  209 0000004A         ;below segment will generate a random number {0-3} used 
+                       to simulate randomness
+  210 0000004A 4827            LDR              R0,=Count
+  211 0000004C 0002            MOVS             R2,R0       ;save count address
+                                                            
+  212 0000004E 6800            LDR              R0,[R0,#0]  ;get value
+  213 00000050 2103            MOVS             R1,#3       ;mask of 11 (last t
+                                                            wo bits)
+  214 00000052 4001            ANDS             R1,R1,R0    ;mod by 4
+  215 00000054 2000            MOVS             R0,#0
+  216 00000056 6010            STR              R0,[R2,#0]  ;initialize count t
                                                             o 0
-  220 00000058         
-  221 00000058 2900            CMP              R1,#0
-  222 0000005A D005            BEQ              neither_setup
-  223 0000005C         
-  224 0000005C 2901            CMP              R1,#1
-  225 0000005E D00A            BEQ              both_setup
-  226 00000060         
-  227 00000060 2902            CMP              R1,#2
-  228 00000062 D00F            BEQ              red_setup
-  229 00000064         
-  230 00000064 2903            CMP              R1,#3
-  231 00000066 D014            BEQ              green_setup
-  232 00000068         ;-------------------------------------------------------
-                       --------------------
-  233 00000068         
-  234 00000068         neither_setup
-  235 00000068 F000 F980       BL               Red_off
-  236 0000006C F000 F984       BL               Green_off
-  237 00000070 4A1E            LDR              R2,=neither ;setup input parame
+  217 00000058         
+  218 00000058         ;contents of R1 contain 'Random' number => {0-3}
+  219 00000058         ;configure LED combinations accordingly
+  220 00000058 2900            CMP              R1,#0
+  221 0000005A D005            BEQ              neither_setup
+  222 0000005C         
+  223 0000005C 2901            CMP              R1,#1
+  224 0000005E D00A            BEQ              both_setup
+  225 00000060         
+  226 00000060 2902            CMP              R1,#2
+  227 00000062 D00F            BEQ              red_setup
+  228 00000064         
+  229 00000064 2903            CMP              R1,#3
+  230 00000066 D014            BEQ              green_setup
+  231 00000068         
+  232 00000068         neither_setup
+  233 00000068         ;configure LED's such that neither LED's are on
+  234 00000068 F000 F980       BL               Red_off
+  235 0000006C F000 F984       BL               Green_off
+  236 00000070 4A1E            LDR              R2,=neither ;setup input parame
                                                             ters for subroutine
                                                             
-  238 00000072 236E            MOVS             R3,#'n'
-  239 00000074 E014            B                call_subroutine
-  240 00000076         
-  241 00000076         both_setup
+  237 00000072 236E            MOVS             R3,#'n'
+  238 00000074 E014            B                call_subroutine
+  239 00000076         
+  240 00000076         both_setup
+  241 00000076         ;configure LED's such that both LED's are turned on
   242 00000076 F000 F985       BL               Green_on
   243 0000007A F000 F971       BL               Red_on
   244 0000007E 4A1C            LDR              R2,=both    ;setup input parame
@@ -429,172 +442,201 @@ ARM Macro Assembler    Page 7 Program Title for Listing Header Goes Here
   246 00000082 E00D            B                call_subroutine
   247 00000084         
   248 00000084         red_setup
-  249 00000084 F000 F96C       BL               Red_on
-  250 00000088 F000 F976       BL               Green_off
-  251 0000008C 4A19            LDR              R2,=red     ;setup input parame
+  249 00000084         ;configure LED's such that only the red LED is turned on
+                       
+  250 00000084 F000 F96C       BL               Red_on
+  251 00000088 F000 F976       BL               Green_off
+  252 0000008C 4A19            LDR              R2,=red     ;setup input parame
                                                             ters for subroutine
                                                             
-  252 0000008E 2372            MOVS             R3,#'r'
-  253 00000090 E006            B                call_subroutine
-  254 00000092         
-  255 00000092         green_setup
-  256 00000092 F000 F977       BL               Green_on
-  257 00000096 F000 F969       BL               Red_off
-  258 0000009A 4A17            LDR              R2,=green   ;setup input parame
-                                                            ters for subroutine
-                                                            
-  259 0000009C 2367            MOVS             R3,#'g'
-  260 0000009E E7FF            B                call_subroutine
-  261 000000A0         
-  262 000000A0         call_subroutine
-  263 000000A0 1C64            ADDS             R4,R4,#1    ;increase the game 
-                                                            round by 1 every ti
-                                                            me it loops back
-  264 000000A2         
-  265 000000A2 2C0B            CMP              R4,#11      ;try with 4 rounds 
-                                                            for now ;check if y
+  253 0000008E 2372            MOVS             R3,#'r'
+  254 00000090 E006            B                call_subroutine
+  255 00000092         
+  256 00000092         green_setup
 
 
 
 ARM Macro Assembler    Page 8 Program Title for Listing Header Goes Here
 
 
-                                                            ou already went thr
-                                                            ough 10 rounds
-  266 000000A4 D00E            BEQ              CompleteGame
-  267 000000A6         
-  268 000000A6         ;;handle round logic
-  269 000000A6 F000 F839       BL               Game_Round
+  257 00000092         ;configure LED's such that only the green LED is turned 
+                       on
+  258 00000092 F000 F977       BL               Green_on
+  259 00000096 F000 F969       BL               Red_off
+  260 0000009A 4A17            LDR              R2,=green   ;setup input parame
+                                                            ters for subroutine
+                                                            
+  261 0000009C 2367            MOVS             R3,#'g'
+  262 0000009E E7FF            B                call_subroutine
+  263 000000A0         
+  264 000000A0         call_subroutine
+  265 000000A0 1C64            ADDS             R4,R4,#1    ;increase the game 
+                                                            round by 1 every ti
+                                                            me it loops back
+  266 000000A2 2C0B            CMP              R4,#11      ;allow maximum of 1
+                                                            0 rounds, compare t
+                                                            o ceiling of (10+1)
+                                                            
+  267 000000A4 D00E            BEQ              CompleteGame ;complete game if 
+                                                            max rounds has been
+                                                             completed
+  268 000000A6         
+  269 000000A6 F000 F839       BL               Game_Round  ;subroutine will pe
+                                                            rform the responsib
+                                                            ilities of a single
+                                                             round
   270 000000AA         
   271 000000AA D200            BCS              TimerExpired ;if the carry bit 
                                                             is set, then run Ti
                                                             merExpired logic
-  272 000000AC         
-  273 000000AC E7CD            B                round       ;go to new round if
+  272 000000AC E7CD            B                round       ;go to new round if
                                                              expired flag not s
                                                             et
-  274 000000AE         
-  275 000000AE         ;logic that will be run when the timer has expired
-  276 000000AE         TimerExpired
-  277 000000AE         ;run expiration logic if expired flag settime_expired
-  278 000000AE 2058            MOVS             R0,#'X'
-  279 000000B0 F000 F981       BL               PutChar
-  280 000000B4 4811            LDR              R0,=out_of_time
-  281 000000B6 F000 F92D       BL               PutString
-  282 000000BA 0010            MOVS             R0,R2       ;load string for ne
+  273 000000AE         
+  274 000000AE         ;logic that will be run when the timer has expired
+  275 000000AE         TimerExpired
+  276 000000AE         ;run expiration logic if expired flag settime_expired
+  277 000000AE 2058            MOVS             R0,#'X'     ;place 'X' characte
+                                                            r into R0
+  278 000000B0 F000 F981       BL               PutChar     ;write 'X' to termi
+                                                            nal 
+  279 000000B4 4811            LDR              R0,=out_of_time ;load address o
+                                                            f 'out_of_time' mes
+                                                            sage into R0
+  280 000000B6 F000 F92D       BL               PutString   ;write 'out_of_time
+                                                            ' string to termina
+                                                            l
+  281 000000BA 0010            MOVS             R0,R2       ;load string for ne
                                                             ither, both, red, o
                                                             r green
-  283 000000BC F000 F92A       BL               PutString
-  284 000000C0 F000 F824       BL               newline
-  285 000000C4         
-  286 000000C4         CompleteGame
-  287 000000C4 480E            LDR              R0,=your_score_is ;prints: "Gam
+  282 000000BC F000 F92A       BL               PutString
+  283 000000C0 F000 F824       BL               newline
+  284 000000C4         
+  285 000000C4         CompleteGame
+  286 000000C4 480E            LDR              R0,=your_score_is ;prints: "Gam
                                                             e over. Your score 
                                                             is"
-  288 000000C6 F000 F925       BL               PutString
-  289 000000CA 4804            LDR              R0,=Score   ;load into R0 the a
-                                                            ddress of score
-  290 000000CC 6800            LDR              R0,[R0,#0]  ;load into R0 the v
-                                                            alue at R0's addres
-                                                            s
-  291 000000CE F000 F9AC       BL               PutNumUB    ;print the decimal 
-                                                            form on the termina
-                                                            l screen
-  292 000000D2 480C            LDR              R0,=points
-  293 000000D4 F000 F91E       BL               PutString
-  294 000000D8 E7A4            B                start
-  295 000000DA         
-  296 000000DA         
-  297 000000DA         ;>>>>>   end main program code <<<<<
-  298 000000DA         ;Stay here
-  299 000000DA E7FE            B                .
-  300 000000DC 00000000 
-              00000000 
-              00000000 
-              00000000 
-              00000000 
-              00000000 
-              00000000 
-              00000000 
-              00000000 
-              00000000 
+  287 000000C6 F000 F925       BL               PutString
+  288 000000CA 4804            LDR              R0,=Score   ;load into R0 the a
 
 
 
 ARM Macro Assembler    Page 9 Program Title for Listing Header Goes Here
 
 
-              00000000 
-              00000000         LTORG
-  301 0000010C                 ALIGN
-  302 0000010C         ;-------------------------------------------------------
-                       --------
-  303 0000010C         ;>>>>> begin subroutine code <<<<<
-  304 0000010C         ;*******************************************************
-                       *********************************************
-  305 0000010C         newline
-  306 0000010C B501            PUSH{R0,LR}
-  307 0000010E 200D            MOVS             R0,#CR      ;carriage return
-  308 00000110 F000 F951       BL               PutChar
-  309 00000114 200A            MOVS             R0,#LF      ;line feed
-  310 00000116 F000 F94E       BL               PutChar     ;completes a new li
-                                                            ne
-  311 0000011A BD01            POP{R0,PC}
-  312 0000011C         
-  313 0000011C         ;*******************************************************
-                       ********************************************************
-                       *****
-  314 0000011C         ;Input Parameters
-  315 0000011C         ;custom string address: R2
-  316 0000011C         ;checking character   : R3
-  317 0000011C         ;game round           : R4
-  318 0000011C         Game_Round
-  319 0000011C B5FE            PUSH             {R1-R7,LR}
-  320 0000011E         
-  321 0000011E 48FE            LDR              R0,=round_number
-  322 00000120 F000 F8F8       BL               PutString
-  323 00000124 0020            MOVS             R0,R4       ;put the game round
-                                                             number into R0
-  324 00000126 F000 F980       BL               PutNumUB    ;print the decimal 
+                                                            ddress of score
+  289 000000CC 6800            LDR              R0,[R0,#0]  ;load into R0 the v
+                                                            alue at R0's addres
+                                                            s
+  290 000000CE F000 F9AC       BL               PutNumUB    ;print the decimal 
                                                             form on the termina
                                                             l screen
-  325 0000012A F7FF FFEF       BL               newline
-  326 0000012E 203E            MOVS             R0,#'>'
-  327 00000130 F000 F941       BL               PutChar
-  328 00000134         Retry
-  329 00000134 F000 F92C       BL               check_pressed ;uses R1
-  330 00000138 2901            CMP              R1,#1       ;if the user presse
-                                                            d a key
-  331 0000013A D119            BNE              not_pressed
-  332 0000013C F000 F933       BL               GetChar
-  333 00000140 4298            CMP              R0,R3       ;check if the user 
-                                                            pressed correct cha
-                                                            racter
-  334 00000142 D000            BEQ              correct_answer
-  335 00000144 D10A            BNE              incorrect
-  336 00000146         correct_answer
-  337 00000146 F000 F936       BL               PutChar     ;print the user's c
-                                                            haracter on the scr
-                                                            een
-  338 0000014A 48F4            LDR              R0,=correct
-  339 0000014C F000 F8E2       BL               PutString
-  340 00000150 0010            MOVS             R0,R2       ;load string for ne
-                                                            ither, both, red, o
-                                                            r green
-  341 00000152 F000 F8DF       BL               PutString
-  342 00000156 F7FF FFD9       BL               newline
+  291 000000D2 480C            LDR              R0,=points  ;load address of 'p
+                                                            oints' prefix messa
+                                                            ge into R0
+  292 000000D4 F000 F91E       BL               PutString
+  293 000000D8 E7A4            B                start       ;start new game
+  294 000000DA         
+  295 000000DA         
+  296 000000DA         ;>>>>>   end main program code <<<<<
+  297 000000DA         ;Stay here
+  298 000000DA E7FE            B                .
+  299 000000DC 00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000         LTORG
+  300 0000010C                 ALIGN
+  301 0000010C         ;-------------------------------------------------------
+                       --------
+  302 0000010C         ;>>>>> begin subroutine code <<<<<
+  303 0000010C         ;*******************************************************
+                       *********************************************
+  304 0000010C         newline
+  305 0000010C B501            PUSH{R0,LR}
+  306 0000010E 200D            MOVS             R0,#CR      ;carriage return
+  307 00000110 F000 F951       BL               PutChar
+  308 00000114 200A            MOVS             R0,#LF      ;line feed
+  309 00000116 F000 F94E       BL               PutChar     ;completes a new li
+                                                            ne
+  310 0000011A BD01            POP{R0,PC}
+  311 0000011C         
+  312 0000011C         ;*******************************************************
+                       ********************************************************
+                       *****
+  313 0000011C         ;Input Parameters
+  314 0000011C         ;custom string address: R2
+  315 0000011C         ;checking character   : R3
+  316 0000011C         ;game round           : R4
+  317 0000011C         Game_Round
+  318 0000011C B5FE            PUSH             {R1-R7,LR}
+  319 0000011E         
+  320 0000011E 48FE            LDR              R0,=round_number ;load address 
+                                                            of round prefix
+  321 00000120 F000 F8F8       BL               PutString   ;write round prefix
+                                                             to terminal
+  322 00000124 0020            MOVS             R0,R4       ;put the game round
 
 
 
 ARM Macro Assembler    Page 10 Program Title for Listing Header Goes Here
 
 
-  343 0000015A E01C            B                increase_score
-  344 0000015C         
-  345 0000015C         incorrect
-  346 0000015C F000 F92B       BL               PutChar     ;print the user's c
+                                                             number into R0
+  323 00000126 F000 F980       BL               PutNumUB    ;print the decimal 
+                                                            form on the termina
+                                                            l screen
+  324 0000012A F7FF FFEF       BL               newline     ;write new line to 
+                                                            terminal
+  325 0000012E 203E            MOVS             R0,#'>'     ;write '>' characte
+                                                            r to terminal
+  326 00000130 F000 F941       BL               PutChar
+  327 00000134         Retry
+  328 00000134 F000 F92C       BL               check_pressed ;uses R1
+  329 00000138 2901            CMP              R1,#1       ;if the user presse
+                                                            d a key
+  330 0000013A D119            BNE              not_pressed ;branch to not_pres
+                                                            sed label if no act
+                                                            ion taken 
+  331 0000013C F000 F933       BL               GetChar
+  332 00000140 4298            CMP              R0,R3       ;check if the user 
+                                                            pressed correct cha
+                                                            racter
+  333 00000142 D000            BEQ              correct_answer ;branch to corre
+                                                            ct_answer label if 
+                                                            correct answer prov
+                                                            ided
+  334 00000144 D10A            BNE              incorrect
+  335 00000146         correct_answer
+  336 00000146 F000 F936       BL               PutChar     ;print the user's c
                                                             haracter on the scr
                                                             een
+  337 0000014A 48F4            LDR              R0,=correct ;load address of 'c
+                                                            orrect' message int
+                                                            o R0
+  338 0000014C F000 F8E2       BL               PutString   ;write 'correct' me
+                                                            ssage to terminal
+  339 00000150 0010            MOVS             R0,R2       ;load string for ne
+                                                            ither, both, red, o
+                                                            r green
+  340 00000152 F000 F8DF       BL               PutString
+  341 00000156 F7FF FFD9       BL               newline     ;write a new line t
+                                                            o terminal
+  342 0000015A E01C            B                increase_score ;increase the sc
+                                                            ore for current gam
+                                                            e
+  343 0000015C         
+  344 0000015C         incorrect
+  345 0000015C         ;when the incorrect character is entered, alert user wit
+                       h appropriate error message
+  346 0000015C F000 F92B       BL               PutChar
   347 00000160 48EF            LDR              R0,=wrong
   348 00000162 F000 F8D7       BL               PutString
   349 00000166 F7FF FFD1       BL               newline
@@ -602,35 +644,46 @@ ARM Macro Assembler    Page 10 Program Title for Listing Header Goes Here
   351 0000016C F000 F923       BL               PutChar
   352 00000170         
   353 00000170         not_pressed
-  354 00000170 48EC            LDR              R0,=Count
-  355 00000172 6800            LDR              R0,[R0,#0]
-  356 00000174         
+  354 00000170         ;determine if the amount of time spent in round exceeds 
+                       the amount of time allowed
+  355 00000170 48EC            LDR              R0,=Count   ;load address of co
+                                                            unt into R0
+
+
+
+ARM Macro Assembler    Page 11 Program Title for Listing Header Goes Here
+
+
+  356 00000172 6800            LDR              R0,[R0,#0]  ;load value of coun
+                                                            t into R0
   357 00000174         
-  358 00000174 250B            MOVS             R5,#11      ;move into R5 11
-  359 00000176 1B2E            SUBS             R6,R5,R4    ;R6 has the value o
+  358 00000174         ;below block will calculate (11-round) * 100 -- 
+  359 00000174         ;equal to number of .01s segments allowed in round
+  360 00000174         
+  361 00000174 250B            MOVS             R5,#11      ;move into R5 11
+  362 00000176 1B2E            SUBS             R6,R5,R4    ;R6 has the value o
                                                             f (11-round)
-  360 00000178         
-  361 00000178 2500            MOVS             R5,#0       ;reset R5
-  362 0000017A         
-  363 0000017A         ;copy (11-i) into R7, shift, and add intermediate to R5
-  364 0000017A 0037            MOVS             R7,R6
-  365 0000017C 01BF            LSLS             R7,R7,#6
-  366 0000017E 19ED            ADDS             R5,R5,R7
-  367 00000180         
+  363 00000178 2500            MOVS             R5,#0       ;reset R5
+  364 0000017A         ;copy (11-i) into R7, shift, and add intermediate to R5
+  365 0000017A 0037            MOVS             R7,R6
+  366 0000017C 01BF            LSLS             R7,R7,#6
+  367 0000017E 19ED            ADDS             R5,R5,R7
   368 00000180         ;copy (11-i) into R7, shift, and add intermediate to R5
   369 00000180 0037            MOVS             R7,R6
   370 00000182 017F            LSLS             R7,R7,#5
   371 00000184 19ED            ADDS             R5,R5,R7
-  372 00000186         
-  373 00000186         ;copy (11-i) into R7, shift, and add intermediate to R5
-  374 00000186 0037            MOVS             R7,R6
-  375 00000188 00BF            LSLS             R7,R7,#2
-  376 0000018A 19ED            ADDS             R5,R5,R7
-  377 0000018C         
-  378 0000018C 42A8            CMP              R0,R5       ;compare time consu
-                                                            med to time allowed
-                                                            
-  379 0000018E DBD1            BLT              Retry
+  372 00000186         ;copy (11-i) into R7, shift, and add intermediate to R5
+  373 00000186 0037            MOVS             R7,R6
+  374 00000188 00BF            LSLS             R7,R7,#2
+  375 0000018A 19ED            ADDS             R5,R5,R7
+  376 0000018C         
+  377 0000018C         ;compares count (.01s segments spent in round) to the ti
+                       me allowed
+  378 0000018C 42A8            CMP              R0,R5       ;compare time spent
+                                                             to time allowed
+  379 0000018E DBD1            BLT              Retry       ;continue with roun
+                                                            d if more time allo
+                                                            wed
   380 00000190         
   381 00000190         ;set carry
   382 00000190 2301            MOVS             R3,#1
@@ -648,12 +701,6 @@ ARM Macro Assembler    Page 10 Program Title for Listing Header Goes Here
   393 00000198 682E            LDR              R6,[R5,#0]  ;load value of scor
                                                             e into R6
   394 0000019A 1936            ADDS             R6,R6,R4    ;increment score in
-
-
-
-ARM Macro Assembler    Page 11 Program Title for Listing Header Goes Here
-
-
                                                              R6 by round number
                                                              in R4
   395 0000019C 602E            STR              R6,[R5,#0]  ;store incremented 
@@ -666,6 +713,12 @@ ARM Macro Assembler    Page 11 Program Title for Listing Header Goes Here
   400 000001A0         ;returns from the subroutine
   401 000001A0         GameRoundReturn
   402 000001A0 BDFE            POP{R1-R7,PC}
+
+
+
+ARM Macro Assembler    Page 12 Program Title for Listing Header Goes Here
+
+
   403 000001A2         
   404 000001A2         
   405 000001A2         ;*******************************************************
@@ -713,12 +766,6 @@ ARM Macro Assembler    Page 11 Program Title for Listing Header Goes Here
                                                             s of R1 with an off
                                                             set of Num_enqd.
   419 000001B8         
-
-
-
-ARM Macro Assembler    Page 12 Program Title for Listing Header Goes Here
-
-
   420 000001B8 48DE            LDR              R0,=TxQBuffer ;load into R0 the
                                                              address of QBuffer
                                                              (character to enqu
@@ -731,6 +778,12 @@ ARM Macro Assembler    Page 12 Program Title for Listing Header Goes Here
                                                             beginning of the qu
                                                             eue buffer
   423 000001BE 6048            STR              R0,[R1,#OUT_PTR] ;points to the
+
+
+
+ARM Macro Assembler    Page 13 Program Title for Listing Header Goes Here
+
+
                                                              beginning of the q
                                                             ueue buffer
   424 000001C0 6088            STR              R0,[R1,#BUF_STRT] ;address of b
@@ -778,12 +831,6 @@ ARM Macro Assembler    Page 12 Program Title for Listing Header Goes Here
   437 000001D8 2204            MOVS             R2,#4       ;move the capacity 
                                                             of the queue buffer
                                                              into R2
-
-
-
-ARM Macro Assembler    Page 13 Program Title for Listing Header Goes Here
-
-
   438 000001DA 1880            ADDS             R0,R0,R2    ;increment the char
                                                             acter (R0) by the q
                                                             ueue buffer size
@@ -796,6 +843,12 @@ ARM Macro Assembler    Page 13 Program Title for Listing Header Goes Here
                                                             s in R1 with an off
                                                             set of the buffer s
                                                             ize
+
+
+
+ARM Macro Assembler    Page 14 Program Title for Listing Header Goes Here
+
+
   441 000001E0 2000            MOVS             R0,#0       ;move a zero into R
                                                             0
   442 000001E2 7448            STRB             R0,[R1,#NUM_ENQD] ;store a byte
@@ -843,12 +896,6 @@ ARM Macro Assembler    Page 13 Program Title for Listing Header Goes Here
   463 000001FC         ;if it got past, then it is set. there is something to b
                        e transmitted
   464 000001FC 49CE            LDR              R1,=TxQRecord ;dequeue needs an
-
-
-
-ARM Macro Assembler    Page 14 Program Title for Listing Header Goes Here
-
-
                                                              address to transmi
                                                             t
   465 000001FE F000 F838       BL               Dequeue
@@ -861,6 +908,12 @@ ARM Macro Assembler    Page 14 Program Title for Listing Header Goes Here
   469 00000208         
   470 00000208         ISR_dequeue_failure
   471 00000208 222C            MOVS             R2,#UART_C2_T_RI ;the control r
+
+
+
+ARM Macro Assembler    Page 15 Program Title for Listing Header Goes Here
+
+
                                                             egister value that 
                                                             the register needs 
                                                             to be reset to when
@@ -908,12 +961,6 @@ ARM Macro Assembler    Page 14 Program Title for Listing Header Goes Here
                        terminated
   492 00000222         ;source string from memory starting at the address in R0
                        
-
-
-
-ARM Macro Assembler    Page 15 Program Title for Listing Header Goes Here
-
-
   493 00000222         ;R0 gets copied into R1
   494 00000222         
   495 00000222 B40F            PUSH{R0-R3}
@@ -926,6 +973,12 @@ ARM Macro Assembler    Page 15 Program Title for Listing Header Goes Here
                                                              of counter
   499 00000228 548B            STRB             R3,[R1,R2]  ;storing the curren
                                                             t ascii value into 
+
+
+
+ARM Macro Assembler    Page 16 Program Title for Listing Header Goes Here
+
+
                                                             the desired registe
                                                             r
   500 0000022A 1C52            ADDS             R2,R2,#1    ;increment counter
@@ -973,12 +1026,6 @@ ARM Macro Assembler    Page 15 Program Title for Listing Header Goes Here
                                                             haracter on the sta
                                                             ck
   524 00000244 1C52            ADDS             R2,R2,#1    ;increment characte
-
-
-
-ARM Macro Assembler    Page 16 Program Title for Listing Header Goes Here
-
-
                                                             r counter to use fo
                                                             r offset when loadi
                                                             ng when you loop ag
@@ -991,6 +1038,12 @@ ARM Macro Assembler    Page 16 Program Title for Listing Header Goes Here
   528 0000024A 5503            STRB             R3,[R0,R4]  ;put current charac
                                                             ter back into R0 w/
                                                              offset of new coun
+
+
+
+ARM Macro Assembler    Page 17 Program Title for Listing Header Goes Here
+
+
                                                             ter
   529 0000024C 1C64            ADDS             R4,R4,#1    ;increment counter
   530 0000024E 4294            CMP              R4,R2       ;compare the counte
@@ -1038,12 +1091,6 @@ ARM Macro Assembler    Page 16 Program Title for Listing Header Goes Here
   553 00000264 2B00            CMP              R3,#0       ;check for null ter
                                                             mination
   554 00000266 D002            BEQ              didnt_find  ;if you reach null 
-
-
-
-ARM Macro Assembler    Page 17 Program Title for Listing Header Goes Here
-
-
                                                             termination, then t
                                                             hat means you didn'
                                                             t find the char you
@@ -1056,6 +1103,12 @@ ARM Macro Assembler    Page 17 Program Title for Listing Header Goes Here
   559 0000026E         didnt_find
   560 0000026E 2200            MOVS             R2,#0       ;move 0 into R2 if 
                                                             it didn't find the 
+
+
+
+ARM Macro Assembler    Page 18 Program Title for Listing Header Goes Here
+
+
                                                             char
   561 00000270 E7FB            B                found
   562 00000272         
@@ -1103,12 +1156,6 @@ ARM Macro Assembler    Page 17 Program Title for Listing Header Goes Here
   583 00000282 7C4B            LDRB             R3,[R1,#NUM_ENQD] ;load the num
                                                             _enqd equate value 
                                                             into a register
-
-
-
-ARM Macro Assembler    Page 18 Program Title for Listing Header Goes Here
-
-
   584 00000284 1E5B            SUBS             R3,R3,#1    ;decrement numberEn
                                                             queued.
   585 00000286 744B            STRB             R3,[R1,#NUM_ENQD] ;storing upda
@@ -1121,6 +1168,12 @@ ARM Macro Assembler    Page 18 Program Title for Listing Header Goes Here
   587 0000028A 429A            CMP              R2,R3       ;check to see if ou
                                                             tpointer is outside
                                                              of the queue buffe
+
+
+
+ARM Macro Assembler    Page 19 Program Title for Listing Header Goes Here
+
+
                                                             r
   588 0000028C D203            BHS              outside_buffer_DQ
   589 0000028E         ;if out_ptr NOT outside queue buffer:
@@ -1168,12 +1221,6 @@ ARM Macro Assembler    Page 18 Program Title for Listing Header Goes Here
   614 000002AA         ;All other registers remain unchanged on return.
   615 000002AA B41E            PUSH{R1-R4}                  ;save on stack any 
                                                             register used, othe
-
-
-
-ARM Macro Assembler    Page 19 Program Title for Listing Header Goes Here
-
-
                                                             r than PSR
   616 000002AC 7C4A            LDRB             R2,[R1,#NUM_ENQD] ;puts the num
                                                             ber of enqueued ele
@@ -1186,6 +1233,12 @@ ARM Macro Assembler    Page 19 Program Title for Listing Header Goes Here
   621 000002B4 680B            LDR              R3,[R1,#IN_PTR] ;getting the ad
                                                             dress for the chara
                                                             cter
+
+
+
+ARM Macro Assembler    Page 20 Program Title for Listing Header Goes Here
+
+
   622 000002B6 7018            STRB             R0,[R3,#0]  ;put new element at
                                                              memory location wh
                                                             ere in pointer poin
@@ -1233,12 +1286,6 @@ ARM Macro Assembler    Page 19 Program Title for Listing Header Goes Here
                                                             ers pushed onto the
                                                              stack
   648 000002D8 4770            BX               LR          ;go back to main co
-
-
-
-ARM Macro Assembler    Page 20 Program Title for Listing Header Goes Here
-
-
                                                             de
   649 000002DA         ;*******************************************************
                        ********************************************************
@@ -1251,6 +1298,12 @@ ARM Macro Assembler    Page 20 Program Title for Listing Header Goes Here
                        in string for each char up to MAX_STRING-1 chars
   653 000002DA         ;for any character typed after the first MAX_STRING-1 ch
                        ars, it does not store the char in the string and doesn'
+
+
+
+ARM Macro Assembler    Page 21 Program Title for Listing Header Goes Here
+
+
                        t echo the char
   654 000002DA         ;when carriage return char has been received, it null te
                        rminates the string, advances the cursor to the next lin
@@ -1298,12 +1351,6 @@ ARM Macro Assembler    Page 20 Program Title for Listing Header Goes Here
   673 000002FE 200A            MOVS             R0,#LF      ;move line feed int
                                                             o R0
   674 00000300 F000 F859       BL               PutChar     ;completes new line
-
-
-
-ARM Macro Assembler    Page 21 Program Title for Listing Header Goes Here
-
-
                                                              output
   675 00000304 2000            MOVS             R0,#0       ;move a null charac
                                                             ter into R0
@@ -1316,6 +1363,12 @@ ARM Macro Assembler    Page 21 Program Title for Listing Header Goes Here
                                                             er characters but d
                                                             oesn't store/echo t
                                                             o screen
+
+
+
+ARM Macro Assembler    Page 22 Program Title for Listing Header Goes Here
+
+
   680 0000030E 280D            CMP              R0,#13      ;compare to enter
   681 00000310 D0F3            BEQ              end_loop    ;ends loop if enter
                                                              was pressed
@@ -1363,12 +1416,6 @@ ARM Macro Assembler    Page 21 Program Title for Listing Header Goes Here
   703 0000032E 4888            LDR              R0,=FGPIOD_BASE
   704 00000330 4988            LDR              R1,=LED_PORTD_MASK
   705 00000332 6141            STR              R1,[R0,#GPIO_PDDR_OFFSET]
-
-
-
-ARM Macro Assembler    Page 22 Program Title for Listing Header Goes Here
-
-
   706 00000334         
   707 00000334 4888            LDR              R0,=FGPIOE_BASE
   708 00000336 4989            LDR              R1,=LED_PORTE_MASK
@@ -1381,6 +1428,12 @@ ARM Macro Assembler    Page 22 Program Title for Listing Header Goes Here
   713 0000033E         InitPortDandE
   714 0000033E B407            PUSH{R0-R2}
   715 00000340 4887            LDR              R0,=SIM_SCGC5
+
+
+
+ARM Macro Assembler    Page 23 Program Title for Listing Header Goes Here
+
+
   716 00000342 4988            LDR              R1,=(SIM_SCGC5_PORTD_MASK :OR: 
 SIM_SCGC5_PORTE_MASK)
   717 00000344 6802            LDR              R2,[R0,#0]
@@ -1428,12 +1481,6 @@ SIM_SCGC5_PORTE_MASK)
                        ********************************************************
                        ******************
   753 00000378         Green_off
-
-
-
-ARM Macro Assembler    Page 23 Program Title for Listing Header Goes Here
-
-
   754 00000378 B403            PUSH{R0-R1}
   755 0000037A 4875            LDR              R0,=FGPIOD_BASE
   756 0000037C 4975            LDR              R1,=LED_GREEN_MASK
@@ -1446,6 +1493,12 @@ ARM Macro Assembler    Page 23 Program Title for Listing Header Goes Here
   761 00000384         Green_on
   762 00000384 B403            PUSH{R0-R1}
   763 00000386 4872            LDR              R0,=FGPIOD_BASE
+
+
+
+ARM Macro Assembler    Page 24 Program Title for Listing Header Goes Here
+
+
   764 00000388 4972            LDR              R1,=LED_GREEN_MASK
   765 0000038A 6081            STR              R1,[R0,#GPIO_PCOR_OFFSET]
   766 0000038C BC03            POP{R0-R1}
@@ -1493,12 +1546,6 @@ ARM Macro Assembler    Page 23 Program Title for Listing Header Goes Here
   793 000003A6 B50E            PUSH             {R1-R3, LR} ;pushing registers 
                                                             to use in subroutin
                                                             e
-
-
-
-ARM Macro Assembler    Page 24 Program Title for Listing Header Goes Here
-
-
   794 000003A8 4961            LDR              R1,=RxQRecord ;load into R1 bec
                                                             ause thats what deq
                                                             ueue takes
@@ -1511,6 +1558,12 @@ ARM Macro Assembler    Page 24 Program Title for Listing Header Goes Here
                                                             rupts
   799 000003B2 D2FA            BCS              get_loop    ;branch if c set be
                                                             cause if c clear th
+
+
+
+ARM Macro Assembler    Page 25 Program Title for Listing Header Goes Here
+
+
                                                             en end the loop
   800 000003B4 BD0E            POP              {R1-R3, PC} ;popping registers 
                                                             so we can use them 
@@ -1558,12 +1611,6 @@ ARM Macro Assembler    Page 24 Program Title for Listing Header Goes Here
   823 000003CE 2200            MOVS             R2,#0       ;counter keeps trac
                                                             k of how many decim
                                                             al values are pushe
-
-
-
-ARM Macro Assembler    Page 25 Program Title for Listing Header Goes Here
-
-
                                                             d onto the stack
   824 000003D0         loop_PNU
   825 000003D0 0001            MOVS             R1,R0       ;make a copy of R0
@@ -1576,6 +1623,12 @@ ARM Macro Assembler    Page 25 Program Title for Listing Header Goes Here
                                                             l ascii value
   829 000003DA B402            PUSH{R1}                     ;push R1 onto the s
                                                             tack, R1 contains d
+
+
+
+ARM Macro Assembler    Page 26 Program Title for Listing Header Goes Here
+
+
                                                             ecimal digit
   830 000003DC 1C52            ADDS             R2,R2,#1    ;increment counter
   831 000003DE 2800            CMP              R0,#0       ;check to see if re
@@ -1623,12 +1676,6 @@ ARM Macro Assembler    Page 25 Program Title for Listing Header Goes Here
                                                             gnificant hex digit
                                                             
   858 00000404 240F            MOVS             R4,#0x0F    ;mask for the last 
-
-
-
-ARM Macro Assembler    Page 26 Program Title for Listing Header Goes Here
-
-
                                                             four bits
   859 00000406         
   860 00000406         Loop_PNH
@@ -1641,6 +1688,12 @@ ARM Macro Assembler    Page 26 Program Title for Listing Header Goes Here
                                                             o R0
   865 0000040C 40D8            LSRS             R0,R0,R3    ;shift by shifting 
                                                             amount
+
+
+
+ARM Macro Assembler    Page 27 Program Title for Listing Header Goes Here
+
+
   866 0000040E 1F1B            SUBS             R3,R3,#4    ;decrement shift am
                                                             ount for next loop
   867 00000410 4020            ANDS             R0,R0,R4    ;and R0 with the ma
@@ -1688,12 +1741,6 @@ ARM Macro Assembler    Page 26 Program Title for Listing Header Goes Here
                        le counting the number of subtractions
   894 00000436         ;number of subtractions is the quotient
   895 00000436         ;at end of subroutine, R1 value is the remainder.
-
-
-
-ARM Macro Assembler    Page 27 Program Title for Listing Header Goes Here
-
-
   896 00000436         ;R1/R0 = R0 remainder R1
   897 00000436         ;checks if the divisor is zero
   898 00000436         ;checks if the dividend is zero
@@ -1706,6 +1753,12 @@ ARM Macro Assembler    Page 27 Program Title for Listing Header Goes Here
                                                             counter to zero
   902 0000043A 2800            CMP              R0, #0      ; check if R0=0 (di
                                                             viding by zero)
+
+
+
+ARM Macro Assembler    Page 28 Program Title for Listing Header Goes Here
+
+
   903 0000043C D013            BEQ              DivideByZero ; branch if R0=0
   904 0000043E 2900            CMP              R1, #0      ; check if R1=0 (0/
                                                             anything = 0)
@@ -1753,12 +1806,6 @@ ARM Macro Assembler    Page 27 Program Title for Listing Header Goes Here
   926 0000045C         Done
   927 0000045C         
   928 0000045C BC0C            POP              {R2-R3}     ; restore to origin
-
-
-
-ARM Macro Assembler    Page 28 Program Title for Listing Header Goes Here
-
-
                                                             al value for main p
                                                             rogram to continue
   929 0000045E 4770            BX               LR          ; branching back to
@@ -1771,6 +1818,12 @@ ARM Macro Assembler    Page 28 Program Title for Listing Header Goes Here
   933 00000462 2100            MOVS             R1,#0       ; remainder is zero
                                                             : 0/anything has re
                                                             mainder of 0
+
+
+
+ARM Macro Assembler    Page 29 Program Title for Listing Header Goes Here
+
+
   934 00000464 E7F3            B                Clear_CFlag ; branch so that th
                                                             e division finishes
                                                             
@@ -1818,12 +1871,6 @@ _POS)
   962 00000482 600A            STR              R2,[R1,#0]
   963 00000484         
   964 00000484 B662            CPSIE            I           ;unmask interrupts
-
-
-
-ARM Macro Assembler    Page 29 Program Title for Listing Header Goes Here
-
-
   965 00000486 BC03            POP              {R0-R1}
   966 00000488 4770            BX               LR
   967 0000048A         ;*******************************************************
@@ -1836,6 +1883,12 @@ ARM Macro Assembler    Page 29 Program Title for Listing Header Goes Here
   971 0000048A         Init_UART1
   972 0000048A B407            PUSH{R0-R2}                  ; pushing registers
                                                              so that informatio
+
+
+
+ARM Macro Assembler    Page 30 Program Title for Listing Header Goes Here
+
+
                                                             n isn't overwritten
                                                             
   973 0000048C         
@@ -1883,12 +1936,6 @@ _CLEAR
  1006 000004B6         ;Load base address for UART1
  1007 000004B6 4823            LDR              R0,=UART1_BASE ; loading the UA
                                                             RT1_BASE into R0
-
-
-
-ARM Macro Assembler    Page 30 Program Title for Listing Header Goes Here
-
-
  1008 000004B8         
  1009 000004B8         ;Set UART1 baud rate—BDH before BDL
  1010 000004B8         
@@ -1901,6 +1948,12 @@ ARM Macro Assembler    Page 30 Program Title for Listing Header Goes Here
                                                             nto the memory addr
                                                             ess of R1 with offs
                                                             et
+
+
+
+ARM Macro Assembler    Page 31 Program Title for Listing Header Goes Here
+
+
  1013 000004BC 219C            MOVS             R1,#UART_BDL_9600
  1014 000004BE 7041            STRB             R1,[R0,#UART_BDL_OFFSET]
  1015 000004C0         
@@ -1948,12 +2001,6 @@ BKDETECT
                                                              and the mask toget
                                                             her
  1049 000004E2 600B            STR              R3,[R1,#0]  ;store the number w
-
-
-
-ARM Macro Assembler    Page 31 Program Title for Listing Header Goes Here
-
-
                                                             ith enabled/cleared
                                                              bits.
  1050 000004E4         
@@ -1966,6 +2013,12 @@ ARM Macro Assembler    Page 31 Program Title for Listing Header Goes Here
  1056 000004E6 4A36            LDR              R2,=PIT_MCR_EN_FRZ
  1057 000004E8 600A            STR              R2,[R1,#PIT_MCR_OFFSET] 
                                                             ;enable PIT module
+
+
+
+ARM Macro Assembler    Page 32 Program Title for Listing Header Goes Here
+
+
  1058 000004EA 4936            LDR              R1,=PIT_CH0_BASE ;load the chan
                                                             nel 0 base
  1059 000004EC 4A36            LDR              R2,=PIT_LDVAL_10ms ;load the mi
@@ -2013,12 +2066,6 @@ ARM Macro Assembler    Page 31 Program Title for Listing Header Goes Here
  1081 00000508 E001            B                finish_PIT_ISR ;finish the ISR 
                                                             so that it doen't c
                                                             ontinue and increme
-
-
-
-ARM Macro Assembler    Page 32 Program Title for Listing Header Goes Here
-
-
                                                             nt count
  1082 0000050A         
  1083 0000050A         increment_count
@@ -2031,6 +2078,12 @@ ARM Macro Assembler    Page 32 Program Title for Listing Header Goes Here
  1089 00000510 4A2B            LDR              R2,=PIT_TFLG_TIF_MASK
  1090 00000512 60CA            STR              R2,[R1,#PIT_TFLG_OFFSET]
  1091 00000514 B662            CPSIE            I
+
+
+
+ARM Macro Assembler    Page 33 Program Title for Listing Header Goes Here
+
+
  1092 00000516 BD00            POP              {PC}
  1093 00000518         ;*******************************************************
                        ***************
@@ -2078,12 +2131,6 @@ ARM Macro Assembler    Page 32 Program Title for Listing Header Goes Here
               4004D004 
               4004803C 
               00800000 
-
-
-
-ARM Macro Assembler    Page 33 Program Title for Listing Header Goes Here
-
-
               40037000 
               00000001 
               40037100 
@@ -2096,6 +2143,12 @@ ARM Macro Assembler    Page 33 Program Title for Listing Header Goes Here
  1100 00000000                 EXPORT           __Vectors_Size
  1101 00000000                 IMPORT           __initial_sp
  1102 00000000                 IMPORT           Dummy_Handler
+
+
+
+ARM Macro Assembler    Page 34 Program Title for Listing Header Goes Here
+
+
  1103 00000000         __Vectors
  1104 00000000         ;ARM core vectors
  1105 00000000 00000000        DCD              __initial_sp ;00:end of stack
@@ -2143,12 +2196,6 @@ ARM Macro Assembler    Page 33 Program Title for Listing Header Goes Here
  1131 00000060 00000000        DCD              Dummy_Handler ;24:I2C0
  1132 00000064 00000000        DCD              Dummy_Handler ;25:I2C1
  1133 00000068 00000000        DCD              Dummy_Handler ;26:SPI0 (all IRQ
-
-
-
-ARM Macro Assembler    Page 34 Program Title for Listing Header Goes Here
-
-
                                                              sources)
  1134 0000006C 00000000        DCD              Dummy_Handler ;27:SPI1 (all IRQ
                                                              sources)
@@ -2161,6 +2208,12 @@ ARM Macro Assembler    Page 34 Program Title for Listing Header Goes Here
  1138 0000007C 00000000        DCD              Dummy_Handler ;31:ADC0
  1139 00000080 00000000        DCD              Dummy_Handler ;32:CMP0
  1140 00000084 00000000        DCD              Dummy_Handler ;33:TPM0
+
+
+
+ARM Macro Assembler    Page 35 Program Title for Listing Header Goes Here
+
+
  1141 00000088 00000000        DCD              Dummy_Handler ;34:TPM1
  1142 0000008C 00000000        DCD              Dummy_Handler ;35:TPM2
  1143 00000090 00000000        DCD              Dummy_Handler ;36:RTC (alarm)
@@ -2208,12 +2261,6 @@ e. ",0
                                                             0" tells putstring 
                                                             when to stop
  1164 00000022 3A 20 57 
-
-
-
-ARM Macro Assembler    Page 35 Program Title for Listing Header Goes Here
-
-
               72 6F 6E 
               67 00    wrong   DCB              ": Wrong",0
  1165 0000002A 3A 20 43 
@@ -2226,6 +2273,12 @@ ARM Macro Assembler    Page 35 Program Title for Listing Header Goes Here
               00       correct DCB              ": Correct--color was ",0
  1166 00000040 3A 20 4F 
               75 74 20 
+
+
+
+ARM Macro Assembler    Page 36 Program Title for Listing Header Goes Here
+
+
               6F 66 20 
               74 69 6D 
               65 2D 2D 
@@ -2273,24 +2326,24 @@ ARM Macro Assembler    Page 35 Program Title for Listing Header Goes Here
               00 00 00 
               00 00 00 
               00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
 
 
 
-ARM Macro Assembler    Page 36 Program Title for Listing Header Goes Here
+ARM Macro Assembler    Page 37 Program Title for Listing Header Goes Here
 
 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
               00 00 00 
               00 00 00 
               00 00 00 
@@ -2338,12 +2391,6 @@ ARM Macro Assembler    Page 36 Program Title for Listing Header Goes Here
                                SPACE            Q_REC_SZ
  1184 000000B2 00 00           ALIGN
  1185 000000B4 00 00 00 
-
-
-
-ARM Macro Assembler    Page 37 Program Title for Listing Header Goes Here
-
-
               00 00 00 
               00 00 00 
               00 00 00 
@@ -2356,6 +2403,12 @@ ARM Macro Assembler    Page 37 Program Title for Listing Header Goes Here
               00 00 00 
               00 00 00 
               00 00 00 
+
+
+
+ARM Macro Assembler    Page 38 Program Title for Listing Header Goes Here
+
+
               00 00 00 
               00 00 00 
               00 00 00 
@@ -2403,24 +2456,24 @@ ARM Macro Assembler    Page 37 Program Title for Listing Header Goes Here
               00 00 00 
               00 00 00 
               00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
+              00 00 00 
 
 
 
-ARM Macro Assembler    Page 38 Program Title for Listing Header Goes Here
+ARM Macro Assembler    Page 39 Program Title for Listing Header Goes Here
 
 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
               00 00 00 
               00 00 00 
               00 00 00 
@@ -2460,9 +2513,9 @@ CompleteGame 000000C4
 
 Symbol: CompleteGame
    Definitions
-      At line 286 in file Exercise13.s
+      At line 285 in file Exercise13.s
    Uses
-      At line 266 in file Exercise13.s
+      At line 267 in file Exercise13.s
 Comment: CompleteGame used once
 CopyString 00000222
 
@@ -2580,7 +2633,7 @@ Relocatable symbols
 
 Symbol: Game_Round
    Definitions
-      At line 318 in file Exercise13.s
+      At line 317 in file Exercise13.s
    Uses
       At line 269 in file Exercise13.s
 Comment: Game_Round used once
@@ -2590,8 +2643,8 @@ Symbol: GetChar
    Definitions
       At line 792 in file Exercise13.s
    Uses
-      At line 207 in file Exercise13.s
-      At line 332 in file Exercise13.s
+      At line 206 in file Exercise13.s
+      At line 331 in file Exercise13.s
       At line 662 in file Exercise13.s
       At line 679 in file Exercise13.s
 
@@ -2609,9 +2662,9 @@ Symbol: Green_off
    Definitions
       At line 753 in file Exercise13.s
    Uses
-      At line 196 in file Exercise13.s
-      At line 236 in file Exercise13.s
-      At line 250 in file Exercise13.s
+      At line 195 in file Exercise13.s
+      At line 235 in file Exercise13.s
+      At line 251 in file Exercise13.s
 
 Green_on 00000384
 
@@ -2620,7 +2673,7 @@ Symbol: Green_on
       At line 761 in file Exercise13.s
    Uses
       At line 242 in file Exercise13.s
-      At line 256 in file Exercise13.s
+      At line 258 in file Exercise13.s
 
 ISR_dequeue_failure 00000208
 
@@ -2761,11 +2814,11 @@ Symbol: PutChar
    Definitions
       At line 804 in file Exercise13.s
    Uses
-      At line 279 in file Exercise13.s
-      At line 308 in file Exercise13.s
-      At line 310 in file Exercise13.s
-      At line 327 in file Exercise13.s
-      At line 337 in file Exercise13.s
+      At line 278 in file Exercise13.s
+      At line 307 in file Exercise13.s
+      At line 309 in file Exercise13.s
+      At line 326 in file Exercise13.s
+      At line 336 in file Exercise13.s
       At line 346 in file Exercise13.s
 
 
@@ -2806,8 +2859,8 @@ Symbol: PutNumUB
    Definitions
       At line 883 in file Exercise13.s
    Uses
-      At line 291 in file Exercise13.s
-      At line 324 in file Exercise13.s
+      At line 290 in file Exercise13.s
+      At line 323 in file Exercise13.s
 
 PutString 00000314
 
@@ -2815,14 +2868,14 @@ Symbol: PutString
    Definitions
       At line 686 in file Exercise13.s
    Uses
-      At line 205 in file Exercise13.s
-      At line 281 in file Exercise13.s
-      At line 283 in file Exercise13.s
-      At line 288 in file Exercise13.s
-      At line 293 in file Exercise13.s
-      At line 322 in file Exercise13.s
-      At line 339 in file Exercise13.s
-      At line 341 in file Exercise13.s
+      At line 204 in file Exercise13.s
+      At line 280 in file Exercise13.s
+      At line 282 in file Exercise13.s
+      At line 287 in file Exercise13.s
+      At line 292 in file Exercise13.s
+      At line 321 in file Exercise13.s
+      At line 338 in file Exercise13.s
+      At line 340 in file Exercise13.s
       At line 348 in file Exercise13.s
 
 Red_off 0000036C
@@ -2831,15 +2884,15 @@ Symbol: Red_off
    Definitions
       At line 745 in file Exercise13.s
    Uses
-      At line 197 in file Exercise13.s
+      At line 196 in file Exercise13.s
 
 
 
 ARM Macro Assembler    Page 7 Alphabetic symbol ordering
 Relocatable symbols
 
-      At line 235 in file Exercise13.s
-      At line 257 in file Exercise13.s
+      At line 234 in file Exercise13.s
+      At line 259 in file Exercise13.s
 
 Red_on 00000360
 
@@ -2848,7 +2901,7 @@ Symbol: Red_on
       At line 737 in file Exercise13.s
    Uses
       At line 243 in file Exercise13.s
-      At line 249 in file Exercise13.s
+      At line 250 in file Exercise13.s
 
 Reset_Handler 00000000
 
@@ -2863,7 +2916,7 @@ Retry 00000134
 
 Symbol: Retry
    Definitions
-      At line 328 in file Exercise13.s
+      At line 327 in file Exercise13.s
    Uses
       At line 379 in file Exercise13.s
 Comment: Retry used once
@@ -2887,7 +2940,7 @@ TimerExpired 000000AE
 
 Symbol: TimerExpired
    Definitions
-      At line 276 in file Exercise13.s
+      At line 275 in file Exercise13.s
    Uses
       At line 271 in file Exercise13.s
 Comment: TimerExpired used once
@@ -2909,20 +2962,20 @@ both_setup 00000076
 
 Symbol: both_setup
    Definitions
-      At line 241 in file Exercise13.s
+      At line 240 in file Exercise13.s
    Uses
-      At line 225 in file Exercise13.s
+      At line 224 in file Exercise13.s
 Comment: both_setup used once
 call_subroutine 000000A0
 
 Symbol: call_subroutine
    Definitions
-      At line 262 in file Exercise13.s
+      At line 264 in file Exercise13.s
    Uses
-      At line 239 in file Exercise13.s
+      At line 238 in file Exercise13.s
       At line 246 in file Exercise13.s
-      At line 253 in file Exercise13.s
-      At line 260 in file Exercise13.s
+      At line 254 in file Exercise13.s
+      At line 262 in file Exercise13.s
 
 check_pressed 00000390
 
@@ -2930,7 +2983,7 @@ Symbol: check_pressed
    Definitions
       At line 770 in file Exercise13.s
    Uses
-      At line 329 in file Exercise13.s
+      At line 328 in file Exercise13.s
 Comment: check_pressed used once
 check_receive 0000020C
 
@@ -2946,9 +2999,9 @@ correct_answer 00000146
 
 Symbol: correct_answer
    Definitions
-      At line 336 in file Exercise13.s
+      At line 335 in file Exercise13.s
    Uses
-      At line 334 in file Exercise13.s
+      At line 333 in file Exercise13.s
 Comment: correct_answer used once
 didnt_find 0000026E
 
@@ -3064,17 +3117,17 @@ green_setup 00000092
 
 Symbol: green_setup
    Definitions
-      At line 255 in file Exercise13.s
+      At line 256 in file Exercise13.s
    Uses
-      At line 231 in file Exercise13.s
+      At line 230 in file Exercise13.s
 Comment: green_setup used once
 incorrect 0000015C
 
 Symbol: incorrect
    Definitions
-      At line 345 in file Exercise13.s
+      At line 344 in file Exercise13.s
    Uses
-      At line 335 in file Exercise13.s
+      At line 334 in file Exercise13.s
 Comment: incorrect used once
 increase_score 00000196
 
@@ -3082,7 +3135,7 @@ Symbol: increase_score
    Definitions
       At line 387 in file Exercise13.s
    Uses
-      At line 343 in file Exercise13.s
+      At line 342 in file Exercise13.s
 Comment: increase_score used once
 increment_count 0000050A
 
@@ -3127,21 +3180,21 @@ neither_setup 00000068
 
 Symbol: neither_setup
    Definitions
-      At line 234 in file Exercise13.s
+      At line 232 in file Exercise13.s
    Uses
-      At line 222 in file Exercise13.s
+      At line 221 in file Exercise13.s
 Comment: neither_setup used once
 newline 0000010C
 
 Symbol: newline
    Definitions
-      At line 305 in file Exercise13.s
+      At line 304 in file Exercise13.s
    Uses
-      At line 203 in file Exercise13.s
-      At line 206 in file Exercise13.s
-      At line 284 in file Exercise13.s
-      At line 325 in file Exercise13.s
-      At line 342 in file Exercise13.s
+      At line 202 in file Exercise13.s
+      At line 205 in file Exercise13.s
+      At line 283 in file Exercise13.s
+      At line 324 in file Exercise13.s
+      At line 341 in file Exercise13.s
       At line 349 in file Exercise13.s
 
 not_pressed 00000170
@@ -3150,7 +3203,7 @@ Symbol: not_pressed
    Definitions
       At line 353 in file Exercise13.s
    Uses
-      At line 331 in file Exercise13.s
+      At line 330 in file Exercise13.s
 Comment: not_pressed used once
 null_loop 00000248
 
@@ -3221,7 +3274,7 @@ Symbol: red_setup
    Definitions
       At line 248 in file Exercise13.s
    Uses
-      At line 228 in file Exercise13.s
+      At line 227 in file Exercise13.s
 
 
 
@@ -3233,9 +3286,9 @@ round 0000004A
 
 Symbol: round
    Definitions
-      At line 210 in file Exercise13.s
+      At line 208 in file Exercise13.s
    Uses
-      At line 273 in file Exercise13.s
+      At line 272 in file Exercise13.s
 Comment: round used once
 start 00000024
 
@@ -3243,7 +3296,7 @@ Symbol: start
    Definitions
       At line 190 in file Exercise13.s
    Uses
-      At line 294 in file Exercise13.s
+      At line 293 in file Exercise13.s
 Comment: start used once
 while_get_string 000002E4
 
@@ -3323,7 +3376,7 @@ Symbol: correct
    Definitions
       At line 1165 in file Exercise13.s
    Uses
-      At line 338 in file Exercise13.s
+      At line 337 in file Exercise13.s
 Comment: correct used once
 green 0000005E
 
@@ -3331,7 +3384,7 @@ Symbol: green
    Definitions
       At line 1168 in file Exercise13.s
    Uses
-      At line 258 in file Exercise13.s
+      At line 260 in file Exercise13.s
 Comment: green used once
 neither 00000069
 
@@ -3339,7 +3392,7 @@ Symbol: neither
    Definitions
       At line 1170 in file Exercise13.s
    Uses
-      At line 237 in file Exercise13.s
+      At line 236 in file Exercise13.s
 Comment: neither used once
 out_of_time 00000040
 
@@ -3347,7 +3400,7 @@ Symbol: out_of_time
    Definitions
       At line 1166 in file Exercise13.s
    Uses
-      At line 280 in file Exercise13.s
+      At line 279 in file Exercise13.s
 Comment: out_of_time used once
 points 0000008B
 
@@ -3355,7 +3408,7 @@ Symbol: points
    Definitions
       At line 1172 in file Exercise13.s
    Uses
-      At line 292 in file Exercise13.s
+      At line 291 in file Exercise13.s
 Comment: points used once
 prompt 00000000
 
@@ -3369,7 +3422,7 @@ Relocatable symbols
    Definitions
       At line 1163 in file Exercise13.s
    Uses
-      At line 204 in file Exercise13.s
+      At line 203 in file Exercise13.s
 Comment: prompt used once
 red 0000005A
 
@@ -3377,7 +3430,7 @@ Symbol: red
    Definitions
       At line 1167 in file Exercise13.s
    Uses
-      At line 251 in file Exercise13.s
+      At line 252 in file Exercise13.s
 Comment: red used once
 round_number 00000094
 
@@ -3385,7 +3438,7 @@ Symbol: round_number
    Definitions
       At line 1173 in file Exercise13.s
    Uses
-      At line 321 in file Exercise13.s
+      At line 320 in file Exercise13.s
 Comment: round_number used once
 wrong 00000022
 
@@ -3401,7 +3454,7 @@ Symbol: your_score_is
    Definitions
       At line 1171 in file Exercise13.s
    Uses
-      At line 287 in file Exercise13.s
+      At line 286 in file Exercise13.s
 Comment: your_score_is used once
 12 symbols
 
@@ -3416,8 +3469,8 @@ Symbol: Count
    Definitions
       At line 1191 in file Exercise13.s
    Uses
-      At line 211 in file Exercise13.s
-      At line 354 in file Exercise13.s
+      At line 210 in file Exercise13.s
+      At line 355 in file Exercise13.s
       At line 1074 in file Exercise13.s
 
 MyData 00000000
@@ -3450,7 +3503,7 @@ Symbol: RunStopWatch
    Definitions
       At line 1195 in file Exercise13.s
    Uses
-      At line 199 in file Exercise13.s
+      At line 198 in file Exercise13.s
       At line 1076 in file Exercise13.s
 
 RxQBuffer 00000000
@@ -3484,8 +3537,8 @@ Symbol: Score
    Definitions
       At line 1193 in file Exercise13.s
    Uses
-      At line 193 in file Exercise13.s
-      At line 289 in file Exercise13.s
+      At line 192 in file Exercise13.s
+      At line 288 in file Exercise13.s
       At line 392 in file Exercise13.s
 
 TxQBuffer 00000050
@@ -5092,7 +5145,7 @@ Symbol: CR
    Definitions
       At line 33 in file Exercise13.s
    Uses
-      At line 307 in file Exercise13.s
+      At line 306 in file Exercise13.s
 Comment: CR used once
 DAC0_BASE 4003F000
 
@@ -7114,7 +7167,7 @@ Symbol: LF
    Definitions
       At line 34 in file Exercise13.s
    Uses
-      At line 309 in file Exercise13.s
+      At line 308 in file Exercise13.s
       At line 673 in file Exercise13.s
 
 LLWU_IPR E000E404
