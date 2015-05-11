@@ -318,7 +318,7 @@ newline
 ;checking character	  : R3
 ;game round           : R4
 Game_Round
-		PUSH {R1-R4,LR}
+		PUSH {R1-R7,LR}
        
         MOVS R0,R4              ;put the game round number into R0
         BL PutNumUB             ;print the decimal form on the terminal screen
@@ -382,44 +382,21 @@ not_pressed
 		B GameRoundReturn
 		
 increase_score
+		
+		;R4 contains the game round
+		;increase score by the game round
 
-
-		;R4 is game round
-		;R5 contains time allowed (in terms of .01s)
-		;Score+=(Time allowed - time taken) * round
-		
-		;get the time taken
-		LDR R6,=Count
-		LDR R6,[R6,#0]
-		
-		;subtract time taken from time allowed
-		SUBS R5,R5,R6
-		
-		;loop for n rounds, adding intermediate
-		
-		MOVS R6,#0					;R6 is the accumulator for the intermediate score
-		MOVS R7,#0					;R7 is counting variable
-		
-		
-AddingLoop
-		
-		ADDS R6,R6,R5				;add time difference to accumulator
-		ADDS R7,R7,#1				
-		CMP R7,R4					;compare counter to rounds
-		BLT AddingLoop				;continue to add as long as counter is less than #Rounds
-		
-		;in R6 is the intermediate score to add to current score
-		LDR R7,=Score				;load into R5 address of Score
-		LDR R5,[R7,#0]				;load value of score into R5
-		ADDS R5,R5,R6				;increment score by intermediate score value in R6
-		STR R5,[R7,#0]				;store incremented score in Score variable
+		LDR R5,=Score				;load into R5 address of Score
+		LDR R6,[R5,#0]				;load value of score into R6
+		ADDS R6,R6,R4				;increment score in R6 by round number in R4
+		STR R6,[R5,#0]				;store incremented score in Score variable
 		
 		;increase the score here and return from subroutine
 		B GameRoundReturn
 		
 ;returns from the subroutine
 GameRoundReturn
-        POP{R1-R4,PC}
+        POP{R1-R7,PC}
 
 
 ;*****************************************************************************************
